@@ -12,7 +12,6 @@ googleAnalytics = "UA-117750022-1"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 # For good rendering in local
 relativeURLs = true
-uglyURLs = true
 
 # Define the number of posts per page
 paginate = 10
@@ -25,16 +24,15 @@ paginate = 10
     name = "Home"
     url  = "/"
     weight = 1
+    
+[[menu.main]]
+    name = "Qui suis-je ?"
+    url  = "/apropos/"
+    weight = 2
 
 [[menu.main]]
     name = "Blog"
     url  = "/blog/"
-    weight = 2
-
-[[menu.main]]
-    name = "FAQ"
-    identifier = "faq"
-    url  = "/faq/"
     weight = 3
 
 [[menu.main]]
@@ -47,38 +45,44 @@ paginate = 10
 [[menu.topbar]]
     weight = 1
     name = "GitHub"
-    url = "https://github.com/devcows/hugo-universal-theme"
-    pre = "<i class='fa fa-2x fa-github'></i>"
+    url = "https://github.com/BenjaminLouis"
+    pre = "<i class='fab fa-2x fa-github'></i>"
 
 [[menu.topbar]]
     weight = 2
-    name = "Facebook"
-    url = "http://facebook.com"
-    pre = "<i class='fa fa-2x fa-facebook'></i>"
+    name = "Twitter"
+    url = "http://twitter.com/benlo_7"
+    pre = "<i class='fab fa-2x fa-twitter'></i>"
 
 [[menu.topbar]]
     weight = 3
-    name = "Twitter"
-    url = "http://twitter.com"
-    pre = "<i class='fa fa-2x fa-twitter'></i>"
+    name = "ResearchGate"
+    url = "https://www.researchgate.net/profile/Benjamin_Louis"
+    pre = "<i class='fab fa-2x fa-researchgate'></i>"
 
 [[menu.topbar]]
     weight = 4
+    name = "LinkedIn"
+    url = "https://www.linkedin.com/in/benjamin-louis-04611a90/"
+    pre = "<i class='fab fa-2x fa-linkedin-in'></i>"
+
+[[menu.topbar]]
+    weight = 5
     name = "Email"
-    url = "mailto:your@email.com"
+    url = "mailto:contact@benjaminlouis-stat.fr"
     pre = "<i class='fa fa-2x fa-envelope'></i>"
 
 [params]
     viewMorePostLink = "/blog/"
-    author = "DevCows"
-    defaultKeywords = ["devows", "hugo", "go"]
+    author = "Benjamin"
+    defaultKeywords = ["statistics", "R", "shiny", "CSS", "HTML", "versus", "Point_of_View"]
     defaultDescription = "Site template made by devcows using hugo"
 
     # Google Maps API key (if not set will default to not passing a key.)
-    googleMapsApiKey = "AIzaSyCFhtWLJcE30xOAjcbSFi-0fnoVmQZPb1Y"
+    googleMapsApiKey = ""#"AIzaSyCFhtWLJcE30xOAjcbSFi-0fnoVmQZPb1Y"
 
-    # Style options: default (light-blue), blue, green, marsala, pink, red, turquoise, violet
-    style = "default"
+    # Style options: default (light-blue), blue, green, marsala, pink, red, turquoise, violet
+    style = "green"
 
     # Since this template is static, the contact form uses www.formspree.io as a
     # proxy. The form makes a POST request to their servers to send the actual
@@ -92,28 +96,25 @@ paginate = 10
     # - click the confirm link in the email from www.formspree.io
     # - you're done. Happy mailing!
     #
-    # Enable the contact form by entering your Formspree.io email
-    email = "your@email.com"
+    # Enable the contact form by entering your Formspree.io email
+    email = "contact@benjaminlouis-stat.fr"
 
-    about_us = "<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>"
-    copyright = "Copyright (c) 2015 - 2016, YourCompany; all rights reserved."
+    #about_us = ""
+    copyright = "&copy; 2018 - 2019, Benjamin Louis - <a href = \"ml/index.html\"> Mentions légales </a> "
 
     # Format dates with Go's time formatting
-    date_format = "January 2, 2006"
+    date_format = "2 janvier 2006"
 
-    logo = "img/logo.png"
-    logo_small = "img/logo-small.png"
-    address = """<p><strong>Universal Ltd.</strong>
-        <br>13/25 New Avenue
-        <br>Newtown upon River
-        <br>45Y 73J
-        <br>England
+    logo = "img/pastille.png"
+    logo_small = "img/pastille-small.png"
+    address = """<p><strong>+33(0)6 47 94 72 38</strong>
+        <br>contact@benjaminlouis-stat.fr
         <br>
-        <strong>Great Britain</strong>
+        <strong>France</strong>
       </p>
       """
-    latitude = "-12.043333"
-    longitude = "-77.028333"
+    #latitude = ""
+    #longitude = ""
 
 [Permalinks]
     blog = "/blog/:year/:month/:day/:filename/"
@@ -121,11 +122,11 @@ paginate = 10
 # Enable or disable top bar with social icons
 [params.topbar]
     enable = true
-    text = """<p class="hidden-sm hidden-xs">Contact us on +420 777 555 333 or hello@universal.com.</p>
-      <p class="hidden-md hidden-lg"><a href="#" data-animate-hover="pulse"><i class="fa fa-phone"></i></a>
-      <a href="#" data-animate-hover="pulse"><i class="fa fa-envelope"></i></a>
-      </p>
-      """
+    text = ""#"""<p class="hidden-sm hidden-xs">Contact us on +420 777 555 333 or hello@universal.com.</p>
+      #<p class="hidden-md hidden-lg"><a href="#" data-animate-hover="pulse"><i class="fa fa-phone"></i></a>
+      #<a href="#" data-animate-hover="pulse"><i class="fa fa-envelope"></i></a>
+      #</p>
+      #"""
 
 # Enable and disable widgets for the right sidebar
 [params.widgets]
@@ -146,7 +147,7 @@ paginate = 10
     # For more informtion take a look at the README.
 
 [params.testimonials]
-    enable = true
+    enable = false
     # All testimonials are defined in their own files. You can find example items
     # at 'exampleSite/data/testimonials'.
     # For more informtion take a look at the README.
@@ -156,20 +157,20 @@ paginate = 10
 [params.see_more]
     enable = true
     icon = "fa fa-file-code-o"
-    title = "Do you want to see more?"
-    subtitle = "We have prepared for you more than 40 different HTML pages, including 5 variations of homepage."
-    link_url = "#"
-    link_text = "Check other homepages"
+    title = "Qui suis-je ?"
+    subtitle = "<p> Ingénieur et docteur en agronomie, la science des données occupe une place centrale dans toutes mes expériences (formation, premiers emplois, thèse, expériences associatives et personnelles). J'aime apprendre et partager mes compétences. Je suis fier d'appartenir à la communauté d'utilisateur du logiciel. J'exerce aujourd'hui mon activité en tant qu'indépendant pour vous accompagner au cours de vos expéditions dans le monde de la donnée. </p> <p>À titre personnel, je suis également un grimpeur passionné. En plus de grimper régulièrement, j'ai passé le diplôme fédéral d'initiateur en structure artificielle afin de partager cette passion à un public jeune ou adulte. Il est possible que vous entendiez parler d'escalade sur mon blog !</p>"
+    link_url = "/doc/CV_BenjaminLouis.pdf"
+    link_text = "Télécharger mon CV"
 
 [params.clients]
     enable = true
     # All clients are defined in their own files. You can find example items
     # at 'exampleSite/data/clients'.
     # For more informtion take a look at the README.
-    title = "Our Clients"
+    title = "On a travaillé ensemble"
     subtitle = ""
 
 [params.recent_posts]
     enable = true
-    title = "From our blog"
-    subtitle = "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo."
+    title = "Sur mon blog"
+    subtitle = ""

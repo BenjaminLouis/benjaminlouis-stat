@@ -8,3 +8,270 @@
 .box-simple {
   min-height: 230px;
 }
+
+
+@media (min-width: 1300px) {
+body.boxed {
+  background: none;
+  background-color: rgb(23, 37, 45);
+}
+body.boxed #all {
+  box-shadow: none;
+}
+}
+
+/*********************************************************************
+
+
+                                NAVBAR
+
+
+**********************************************************************/
+#top {
+  /*background: rgb(23, 37, 45);*/
+  padding: 5px;
+}
+
+#top .social a {
+  margin: 0 10px;
+}
+
+.navbar-brand {
+  padding: 3px 15px;
+  
+}
+
+/*body.boxed .navbar-affixed-top.affix {
+  position: fixed;
+  width: 80;
+}*/
+
+body.boxed .navbar-affixed-top.affix {
+  position: fixed;
+ /* width: 1200px;*/
+  top: 0;
+  /*left: 50%;
+  transform: translateX(-50%);*/
+  z-index: 1000;
+  -webkit-box-shadow: 0 0 5px #cccccc;
+  box-shadow: 0 0 5px #cccccc;
+  -webkit-transition: all 0.5s ease-out;
+  -moz-transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out;
+}
+@media (min-width: 1300px) {
+  body.boxed .navbar-affixed-top.affix {
+    width: 1200px;
+}
+}
+
+/*********************************************************************
+
+
+                                CAROUSEL
+
+
+**********************************************************************/
+.home-carousel .owl-carousel {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.home-carousel h1,
+.home-carousel h2,
+.home-carousel h3,
+.home-carousel p,
+.home-carousel ul {
+  color: rgb(200, 200, 200)/*#fff*/;
+}
+
+/*.home-carousel {
+  background: none;
+}*/
+
+.home-carousel .dark-mask {
+  background-color: rgb(23, 37, 45);
+}
+
+.home-carousel .img-responsive {
+  display: block;
+  margin: auto;
+}
+
+.home-carousel p {
+  font-size: 20px;
+}
+
+
+/*********************************************************************
+
+
+                                SECTION
+
+
+**********************************************************************/
+.bar {
+  padding: 30px 0;
+}
+
+/* features */
+/*----------*/
+
+.box-simple ul {
+  list-style-type: none;
+  text-align: center;
+  padding-left: 0;
+  padding-bottom: 5px;
+  line-height: 18px;
+}
+
+.box-simple {
+  padding: 0 5px;
+}
+
+.box-simple p {
+  text-align: justify;
+  font-size: 11pt;
+  color: #555555;
+}
+
+.box-simple ul {
+  list-style-type: none;
+  text-align: center;
+  padding-left: 0;
+  padding-bottom: 5px;
+  line-height: 18px;
+}
+
+.box-simple ul li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  text-align: justify;
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+.box-simple ul li:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: FontAwesome;
+  content: "\f058";
+  color: green;
+}
+
+/* qui suis-je */
+/*----------*/
+.bar.background-image-fixed-2 {
+  background: url(../img/portfolio-6.jpg) center top no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  color: black;
+}
+.bar.background-image-fixed-2 p {
+  font-weight: bold;
+  font-size: 15px;
+  text-align: justify;
+}
+
+.bar.background-image-fixed-2 p.text-center {
+  text-align: center;
+}
+
+/*recent posts*/
+.box-image-text.blog .intro {
+  text-align: justify;
+  /*height: 250px;*/
+}
+.box-image-text .content h4 {
+/*  height: 80px;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;*/
+  width: 100%;
+  display: table; 
+  height: 80px;
+  text-align: center;
+}
+.box-image-text .content h4 a {
+  color: rgb(23, 37, 45);
+  display: table-cell;
+  vertical-align: middle;
+}
+.box-image-text .image {
+  min-height: 250px;
+  max-height: 250px;
+}
+
+/*********************************************************************
+
+
+                                COPYRIGHT
+
+
+**********************************************************************/
+#copyright {
+  padding: 5px 0;
+}
+
+
+/*********************************************************************
+
+
+                                BLOG POST
+
+
+**********************************************************************/
+#content {
+  text-align: justify;
+}
+
+#post-content img {
+  text-align: center;
+  display: table;
+}
+
+pre {
+  background-color: rgb(255, 255, 255);
+  border: none;
+  padding: 5px;
+}
+
+pre code {
+  border-radius: 4px;
+}
+
+
+.btn.btn-primary.btn-lg {
+  background-color: #0E8C1F;
+  border: none;
+  border-radius: 4px;
+}
+
+#post-content img {
+  float: right;
+  margin: 0 10px;
+}
+
+/*********************************************************************
+
+
+                                CUSTOMERS
+
+
+**********************************************************************/
+
+.owl-item {
+  width: 100%;
+  display: table; 
+  height: 140px;
+  text-align: center;
+}
+
+.item {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+

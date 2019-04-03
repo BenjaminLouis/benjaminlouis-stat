@@ -1,10 +1,11 @@
 ---
-id: contact
 title: Contact
+id: contact
 ---
 
-# We are here to help you
 
-Are you curious about something? Do you have some kind of problem with our products? As am hastily invited settled at limited civilly fortune me. Really spring in extent an by. Judge but built gay party world. Of so am he remember although required. Bachelor unpacked be advanced at. Confined in declared marianne is vicinity.
+# Une question, besoin d'aide ? Discutons-en !
 
-Please feel free to contact us, our customer service center is working for you 24/7.
+Si vous voulez en savoir plus sur ce que je peux vous proposer, si vous avez des questions ou si vous voulez simplement un devis gratuit, n'hésitez pas à me contacter en remplissant le formulaire ci-dessous ou en utilisant les coordonnées ci contre.
+
+Au plaisir de discuter avec vous !
