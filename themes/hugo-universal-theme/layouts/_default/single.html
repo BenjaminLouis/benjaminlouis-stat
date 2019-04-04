@@ -29,6 +29,33 @@
                         <div id="post-content">
                           {{ .Content }}
                         </div>
+                        
+                        <!-- share buttons-->
+                        <div class = "sharethis">
+                        <!-- Twitter -->
+                          <span class = "social-button">
+                            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+                            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                          </span>
+                        <!-- Facebook -->
+                          <span class = "social-button">
+                            <div id="fb-root"></div>
+                            <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"></script>
+                            <div class="fb-share-button" data-href="{{ .Permalink }}" data-layout="button" data-size="small">
+                                <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a>
+                            </div>
+                          </span>
+                        <!-- InkedIn -->
+                          <span class = "social-button">
+                            <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+                            <script type="IN/Share" data-url="{{ .Permalink }}"></script>
+                          </span>
+                        <!-- Email -->
+                          <span class = "social-button">
+                            <a href="mailto:?subject=I wanted you to see this blog post&amp;body=Check out this blog post {{ .Permalink }}." title="Share by Email"><i class="fas fa-2x fa-envelope"></i></a>
+                          </span>
+                        </div>
+                        
                         <!-- /#post-content -->
                         {{ if .Site.DisqusShortname }}
                         <div id="comments">

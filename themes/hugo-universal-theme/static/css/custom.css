@@ -254,6 +254,22 @@ pre code {
   margin: 0 10px;
 }
 
+.sharethis .social-button {
+  float: left;
+  margin: 5px;
+  height: 20px;
+}
+
+.sharethis .btn-social, 
+.sharethis .fa-envelope {
+  padding: 0;
+  border: none;
+}
+
+.sharethis .fa-envelope {
+  margin-top: -3px;
+}
+
 /*********************************************************************
 
 
