@@ -1,5 +1,5 @@
 ---
-title: 'PDF vs HTML : Extract information from a Google Form with R'
+title: 'PDF vs HTML : Extracting information from a Google Form with R'
 author: "Benjamin Louis"
 date: '2019-04-03'
 tags: ["pdftools", "rvest", "Google From"]
@@ -15,11 +15,11 @@ knitr::opts_chunk$set(
   message = FALSE)
 ```
 
-Few times ago, I had to analyse responses from a questionnaire. I needed to tidy the dataset downloaded from Google Forms as it did not respect the [10 commandments for a well-formated database](https://rtask.thinkr.fr/blog/the-ten-commandments-for-a-well-formatted-database/). I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. When I decided to get them, two choices were possible : either from the downloaded `PDF` file or from the `HTML` page of the form. And I said to myself, why not try both ?
+A couple months ago, I had to analyse responses from a questionnaire. I needed to tidy the dataset downloaded from Google Forms as it did not respect the [10 commandments for a well-formated database](https://rtask.thinkr.fr/blog/the-ten-commandments-for-a-well-formatted-database/). I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. When I decided to get them, two choices were possible : either from the downloaded `PDF` file or from the `HTML` page of the form. And I said to myself, why not trying both ?
 
 ## What we need, what we want
 
-Besides specific packages presented later, this work is all about manipulate data and of course, [tidyverse](https://www.tidyverse.org/) packages are our friends here : [dplyr](https://dplyr.tidyverse.org/) for general data manipulation, [purrr](https://purrr.tidyverse.org/) for fonctionnal programming and [stringr](https://stringr.tidyverse.org/) for strings manipulation.
+Besides specific packages presented later, this work is all about manipulate data and of course, [tidyverse](https://www.tidyverse.org/) packages are our friends here. I used [dplyr](https://dplyr.tidyverse.org/) for general data manipulation, [purrr](https://purrr.tidyverse.org/) for fonctionnal programming and [stringr](https://stringr.tidyverse.org/) for strings manipulation.
 
 ```{r package}
 library(dplyr)
@@ -27,7 +27,7 @@ library(purrr)
 library(stringr)
 ```
 
-As I cannot publicly share the orginal form, I made a dummy one from my Google account by mixing proposed templates. The `PDF` file can be easily downloaded from the Google Form account. For `HTML`, I first wanted to directly reach the page from the editable version of the form using the [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) package but I never succeeded as it seems Google double authentification makes things difficult. If somebody with better skills for this kind of problem have a solution, I'll take it ! Instead of performing classic webscraping, I saved the `HTML` page from my browser and worked with the file locally. All materials are available [here](https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html).
+As I cannot publicly share the orginal questionnaire, I made a dummy one from my Google account by mixing proposed templates. The `PDF` file could be easily downloaded from the Google Form account. For `HTML`, I first wanted to directly reach the page from the editable version of the questionnaire, using the [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) package, but I never succeeded as it seems Google double authentification makes things difficult. If somebody with better skills for this kind of problem have a solution, I'll take it ! Instead of performing classic webscraping, I saved the `HTML` page from my browser and worked with the file locally. All materials are available [here](https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html).
 
 From these files, the goal is to get a final `data.frame` with three columns :
 
@@ -51,14 +51,14 @@ metapdf <- pdf_data("2019-04-03-pdf-vs-html_files/test_form.pdf")
 head(metapdf[[1]])
 ```
 
-This function was perfect for this work as the returned format is nearly the same as the one I wanted. To really obtained the final format, I just bound all the data frames by row being careful of keeping a pages identifier.
+This function was perfect here as the returned format was nearly the same as the one I wanted. To really obtained the final format, I just bound all data frames by row being careful of keeping a pages identifier.
 
 ```{r bindpages}
 library(pdftools)
 metapdf <- bind_rows(metapdf, .id = "page")
 ```
 
-That's it ! With only one function used once, all the wanted data were extracted from the `PDF`. The rest is "just" data wrangling. At this point, I was convinced that the work was nearly finished but tidying the data frame meant finding some rules to get the three wanted columns from the ones returned by the function. And finding these rules meant a permanent look at the `PDF` while tidying the data frame.
+And that's it ! With only one function used once, all the wanted data were extracted from the `PDF`. The rest is "just" data wrangling. At this point, I was convinced that the work was nearly finished but tidying the data frame meant finding some rules to get the finale data frame from the ones returned by the function. And finding these rules meant a permanent look at the `PDF` while tidying the data frame.
 
 ### Tidying 
 
@@ -77,7 +77,7 @@ metapdf <- metapdf %>%
 
 __Identifying sentences__
 
-The second step was to identifying "sentences" among lines. The idea here was that a sentence starts either by one or two digits following by a dot and a space (question titles) or by an uppercase letter following by a lowercase letter or a space (answer choices). If a question title or an answer choice takes place on two lines of the `PDF`, I'll be able to consider both lines in the same sentence. In order to do that, I created a `sentences_group` column by a) detecting each text box starting a sentence using [regular expressions](https://stringr.tidyverse.org/articles/regular-expressions.html), b) applying a cumulative sum on the boolean so each line belonging to the same sentence have the same sum and c) transforming to character by adding a prefix. This column helped me collapsing sentences and removing duplicated ones.
+The second step was to identifying "sentences" among lines. The idea here was that a sentence starts either by one or two digits following by a dot and a space (question titles) or by an uppercase letter following by a lowercase letter or a space (answer choices). If a question title or an answer choice spreads on several lines of the `PDF`, I wanted to be able to consider all lines in the same sentence. I created a `sentences_group` column by a) detecting each text box starting a sentence using [regular expressions](https://stringr.tidyverse.org/articles/regular-expressions.html), b) applying a cumulative sum on the boolean so each line belonging to the same sentence have the same sum value and c) transforming to string by adding a prefix. This column helped me collapsing sentences and removing duplicated ones.
 
 ```{r pdfsentences} 
 metapdf <- metapdf %>%
@@ -103,7 +103,7 @@ metapdf <- metapdf %>%
 
 __Getting question types__
 
-For each question bloc, I was able to get the questions' type thanks to the default behavior of Google Forms adding a sentence beside each question title to specify how many answer can be given. These sentences are then removed and an identifier is given for sentences in each question bloc.
+For each question bloc, I was able to get the questions types thanks to the default behavior of Google Forms adding a sentence after each question title to specify how many answers can be given. These sentences were then removed and an identifier was given for sentences in each question bloc.
 
 ```{r pdftypes} 
 metapdf <- metapdf %>%
@@ -119,7 +119,7 @@ metapdf <- metapdf %>%
 
 __Isolating questions and answer choices__
 
-The previously created identifier (`id`) enables the differenciation between question titles (`id == 1`) and answer choices (`id != 1`). However, `grid` needed a particular treatment as `id == 2` corresponded to columns names and others ids corresponded to rows names. I first isolated this values, then created the choices and questions columns to finally put back answer choices values for `grid` questions.
+The previously created identifier (`id`) enables the differenciation between question titles (`id == 1`) and answer choices (`id != 1`). However, `grid` needed a particular treatment as `id == 2` corresponded to columns names and others ids corresponded to rows names. I first isolated this values, then created the `choices` and `questions` columns to finally put back answer choices values for `grid` questions.
 
 ```{r pdfchoices}
 # Grid question
@@ -152,11 +152,11 @@ metapdf
 
 ## A try with `rvest`
 
-If you have never heard about `HTML` and `CSS`, maybe what comes after will be a bit obscure but I think this is unlikely. Content of a web page is stored in `HTML` page and webscraping is to collect these data. This is why the [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) package was made for and I obviously used it for this work.
+If you have never heard about `HTML` and `CSS`, maybe what comes after will be a bit obscure but I think this is unlikely. Content of a web page is stored in `HTML` page and webscraping is collecting these data. This is why the [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) package was made for and I obviously used it for this task
 
 ### rvest, selectorGadget and CSS selector
 
-Basically, a `HTML` page has a tree structure (called a DOM for _Document Object Model_) where each node contains objects. Function `read_html` enables to read and import `HTML` page into R.
+Basically, a `HTML` page has a tree structure (called a DOM for _Document Object Model_) where each node contains objects. Function `read_html` makes possible to read and import this DOM into R.
 
 ```{r htmlimport}
 library(rvest)
@@ -171,7 +171,7 @@ Structure of a node looks like `<name attr1 = "value1" attr2 = "value2"> object 
 
 Nodes attributes can be `CSS` selectors. These are used to link nodes to `CSS` stylesheet which defined how content of the node will be presented on a web browser. Name of these attributes are either `id` or `class`. `CSS` selectors are like identifiers of nodes and this is how they are used in webscraping by selecting nodes with specific  `id` or `class`.
 
-The real challenge here is to use the relevant `CSS` selectors. This is where [SelectorGadget](https://selectorgadget.com/) steps in. As [Hadley Wickham](http://hadley.nz/) wrote in  [this vignette of rvest package](https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html), _"Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page."_ SelectorGadget is easy to use and the corresponding vignette makes clear how to use it so I won't explain it in details in this post. 
+The real challenge here is to use the right `CSS` selectors. This is where [SelectorGadget](https://selectorgadget.com/) steps in. As [Hadley Wickham](http://hadley.nz/) wrote in  [this vignette of rvest package](https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html), _"Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page."_ SelectorGadget is easy to use and the corresponding vignette makes clear how to use it so I won't explain it in details in this post. 
 
 ### Scraping the data
 
@@ -181,7 +181,7 @@ __Question blocs__
 
 Question blocs (question titles + answer choices) were contained in nodes with `freebirdFormeditorViewItemContent` value for `CSS` class.
 
-In this image (click to enlarge), GadgetSelector tells that there is 18 nodes with these class value when there are only 9 questions in the questionnaire. I wasn't able to precisely identify what were the extra 9 but I was able to determine how selecting the 9 ones of interest : they all contained a node with `CSS` class equal to `freebirdFormeditorViewItemMinimizedTitleRow` that itself contained a text corresponding to the question title. 
+In this image (click to enlarge), GadgetSelector tells us that there are 18 nodes with these class value when there are only 9 questions in the questionnaire. I wasn't able to precisely identify what were the extra 9 but I was able to determine how selecting the 9 ones of interest : they all contained a node with `CSS` class equal to `freebirdFormeditorViewItemMinimizedTitleRow` that itself contained a text corresponding to the question title. 
 
 
 ```{r htmlblocs}
@@ -207,7 +207,7 @@ __Answer choices and question types__
 
 The next step was to get answer choices and question types by applying a function on each question bloc. This function contained `if..else...` statements depending on the type of questions. 
 
-Both kind of multiple choices questions were in nodes with class `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList` class. Answer choices were stored in attributes `value` in nodes with class `exportInput` and attribute `aria-label` equal to `"option value"`. Some of these questions allowed an _"Other"_ option as answer choice; this option required a special treatment as it was stored in different kind of nodes. Besides, question types between `unique` and `multiple` depended on the value of attribute `data-list-type` from the node with class `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList`.
+Both kind of multiple choices questions were in nodes with class `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList` class. Answer choices were stored in attributes `value` in nodes with class `exportInput` and attribute `aria-label` equal to `"option value"`. Some of these questions allowed an _"Other"_ option as answer choice - this option required a special treatment as it was stored in different kind of nodes. Besides, question types between `unique` and `multiple` depended on `data-list-type` attribute value from the node with class `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList`.
 
 `Grid` question were in question bloc that contains a node with class `freebirdFormeditorViewQuestionBodyGridbodyRow`. Text of nodes with only this class value corresponded to row names of the grid. Column names were stored as text in nodes with class `freebirdFormeditorViewQuestionBodyGridbodyCell` which were present in nodes with class `freebirdFormeditorViewQuestionBodyGridbodyColumnHeader`.
 
@@ -278,7 +278,7 @@ map2(metapdf, metahtml, all.equal)
 
 With two different kind of files, I was able to get the same result thanks to two amazing packages : `pdftools` and `rvest`. Scraping of the `HTML` page could have been made with `xml2` package as lots of `rvest` functions are wrappers around `xml2` functions. The main difference is that `xml2` functions only accept [xpath](https://www.w3schools.com/xml/xpath_intro.asp) expressions which from my point of view has a non easy syntax to master (but maybe I'm lazy). However, you can get xpath expressions from GadgetSelector which helps their utilisation along.
 
-It was not the purpose of this work to tell if one way or the other is better to extract information. I had fun with both and I was amazed by the power of both packages. There will be days when I'll have to work with `PDF`, and I know that I can count on `pdftools` for that, as much as I am more than convinced by `rvest` to help me during my future webscraping.
+It was not the purpose of this work to tell if one way of extracting information is better than the other. I had fun with both and I was amazed by the power of both packages. There will be days when I'll have to work with `PDF`, and I know that I can count on `pdftools` for that, as much as I am more than convinced by `rvest` to help me during my future webscraping.
 
 If I had one difference to point out is that rules to wrangle data from the `PDF` strongly depend on how the `PDF` file is structured. The large diversity of possible structure probably makes difficult to define a reproducible strategy while for `HTML` page strategy is always the same : find value of `CSS` selectors for the data you want with SelectorGadget and apply the appropriate function to extract it. In the end, it might not be faster but it sure makes the workflow more obvious.
 
