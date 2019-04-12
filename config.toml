@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://www.benjaminlouis-stat.fr/"
 title = "Benjamin Louis | Data Scientist - Expertise R - Consultance et Formation"
 theme = "hugo-universal-theme"
 languageCode = "en-us"
