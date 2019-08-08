@@ -6,6 +6,7 @@ tags: ["pdftools", "rvest", "Google From", "R"]
 categories: ["Data-wrangling"]
 banner: 'img/banners/pdf-vs-html.png' 
 Summary: 'test summary'
+level: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -177,7 +178,9 @@ The real challenge here is to use the right `CSS` selectors. This is where [Sele
 
 __Question blocs__
 
+
 [![selectorgadget](/blog/2019-04-03-pdf-vs-html_files/sg.png){width=30%}](/blog/2019-04-03-pdf-vs-html_files/sg.png)
+
 
 Question blocs (question titles + answer choices) were contained in nodes with `freebirdFormeditorViewItemContent` value for `CSS` class.
 

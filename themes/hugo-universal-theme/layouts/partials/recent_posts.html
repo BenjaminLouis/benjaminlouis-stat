@@ -16,6 +16,8 @@
 
             <div class="row">
 
+                <!--  old code : $posts := .Paginate (where .Data.Pages "Type" "blog")  -->
+                <!--  replaced by : $posts := .Paginate (where (where .Data.Pages "Type" "blog") ".Params.level" "1") -->
                 {{ $posts := .Paginate (where .Data.Pages "Type" "blog") }}
                 {{ range first 3 $posts.Pages }}
                 <div class="col-md-4 col-sm-6">
@@ -47,6 +49,11 @@
                             <p class="intro">{{ .Summary }}</p>
                             <p class="read-more">
                               <a href="{{ .Permalink }}" class="btn btn-template-main">{{ i18n "continueReading" }}</a>
+                              {{ if .IsTranslated }} |
+    {{ range .Translations }}
+    <a href="{{ .Permalink }}"><img src =  '{{"img/flags/"| absURL }}{{ .Language.LanguageName }}.png' alt = "{{ .Language.LanguageName }}" class = "flags"></a>
+    {{ end }}
+{{ end }}
                             </p>
                         </div>
                     </div>
