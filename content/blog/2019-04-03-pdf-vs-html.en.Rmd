@@ -1,26 +1,27 @@
 ---
-title: "PDF vs HTML : Extraire de l'information d'un formulaire Google"
+title: 'PDF vs HTML : Extracting information from a Google Form with R'
 author: "Benjamin Louis"
 date: '2019-04-03'
 tags: ["pdftools", "rvest", "Google From", "R"]
 categories: ["Data-wrangling"]
 banner: 'img/banners/pdf-vs-html.png' 
 Summary: 'test summary'
-level: 1
+level: 2
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,
-  message = FALSE)
+  message = FALSE,
+  eval = FALSE)
 ```
 
-Il y a quelques mois, j'ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les [10 commandements d’une base de données réussie](https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/), un sérieux travail de nettoyage était nécessaire. Les titres des questions et les choix possibles des réponses étaient nécessaires mais n'étaient pas fournis par le client  que I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. Alors que je cherchais comment les récupérer, deux choix s'offrait à moi : soit via le fichier `PDF` téléchargeable, soit via la page `HTML` directement. J'ai décidé de tester les deux possibilités.
+A couple months ago, I had to analyse responses from a questionnaire. I needed to tidy the dataset downloaded from Google Forms as it did not respect the [10 commandments for a well-formated database](https://rtask.thinkr.fr/blog/the-ten-commandments-for-a-well-formatted-database/). I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. When I decided to get them, two choices were possible : either from the downloaded `PDF` file or from the `HTML` page of the form. And I said to myself, why not trying both ?
 
-## Quels outils pour quel résultat
+## What we need, what we want
 
-En plus de packages spécifiques présentés plus tard, ce travail est avant tout un travail de manipulation de données et évidemment les packages du [tidyverse](https://www.tidyverse.org/) vont nous être utils : [dplyr](https://dplyr.tidyverse.org/) pour la manipulation de données en général, [purrr](https://purrr.tidyverse.org/) pour la programmation fonctionnelle et [stringr](https://stringr.tidyverse.org/) pour la manipulation de chaîne de caractères.
+Besides specific packages presented later, this work is all about manipulating data and of course, [tidyverse](https://www.tidyverse.org/) packages are our friends here. I used [dplyr](https://dplyr.tidyverse.org/) for general data manipulation, [purrr](https://purrr.tidyverse.org/) for fonctionnal programming and [stringr](https://stringr.tidyverse.org/) for strings manipulation.
 
 ```{r package}
 library(dplyr)
@@ -28,23 +29,23 @@ library(purrr)
 library(stringr)
 ```
 
-Le questionnaire Google original étant confidentiel, j'en ai créé un factice en mixant plusieurs modèles proposés par Google. J'ai pu facilement télécharger le fichier `PDF` correspondant. Pour la version `HTML`, j'ai d'abord essayer d'atteindre directement la page depuis la version éditable du questionnaire à l'aide du package [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/), mais j'ai perdu la bataille contre la double authentification de Google. Si quelqu'un a une solution pour ce problème, je suis preneur ! Tant pis pour le classique _webscraping_, j'ai opté pour la sauvegarde de la page `HTML` depuis mon navigateur pour travailler en local. L'ensemble des documents sont disponibles [ici](https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html).
+As I cannot publicly share the orginal questionnaire, I made a dummy one from my Google account by mixing proposed templates. The `PDF` file could be easily downloaded from the Google Form account. For `HTML`, I first wanted to directly reach the page from the editable version of the questionnaire, using the [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) package, but I never succeeded as it seems Google double authentification makes things difficult. If somebody with better skills for this kind of problem have a solution, I'll take it ! Instead of performing classic webscraping, I saved the `HTML` page from my browser and worked with the file locally. All materials are available [here](https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html).
 
-À partir de ces fichiers, je cherchais à obtenir un `data.frame` final contenant 3 colonnes :
+From these files, the goal is to get a final `data.frame` with three columns :
 
-+ `questions` : les titres des questions
++ `questions` : the questions' titles
 
-+ `types` : le [type des questions](https://support.google.com/docs/answer/7322334?hl=fr) qui peut prendre 4 valeurs : `unique` pour des questions à choix multiples avec une seul réponse possible, `multiple` pour des questions à choix multiples avec plusieurs réponses possibles, `free` pour les questions avec réponse libre et `grid` pour les grilles à choix multiples.
++ `types` : the [types of questions](https://support.google.com/docs/answer/7322334?hl=en) which can take 4 values : `unique` for multiple choices questions with a unique answer, `multiple` for multiple choices questions with possibility of several answers, `free` for questions with free answer and `grid` for mutliple choices grid questions.
 
-+ `choices` : une [liste-colonne](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html) dont chaque ligne est un vecteur des choix possibles de réponse pour les quesitons `unique` et `multiple`, un vecteur dont les éléments sont nommés pour les questions `grid` (les noms correspondant à ligne1, ligne2, ..., colonne1, ... de la grille) et un vecteur d elongueur 0 pour les questions `free`.
++ `choices` : a [list-column](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html) with each row being a vector of answer choices for `unique` and `multiple` questions, a named vector for `grid` questions (names coresponding to row1, row2, ..., column1, ...) and vector of length 0 for `free` questions
 
-## `pdftools` à l'essai
+## A try with `pdftools`
 
-Pour travailler avec le fichier `PDF`, j'ai utilisé le [package rOpenSci `pdftools` développé par Jeroen Ooms’](https://github.com/ropensci/pdftools). Si vous ne connaissez pas ce package, je vous encourage vivement à y jeter un oeil ainsi qu'à [l'article de Maëlle Salmon sur l'emploi du temps de Trump](https://masalmon.eu/2019/02/11/trump-schedule/). Pour les utilisateurs d'Ubuntu, l'installation de `pdftools` peut s'avérer délicate car la dernière version de Poppler n'est pas disponible sur Linux. J'ai réussi grâce à [cette discussion](https://askubuntu.com/questions/1112856/how-to-install-poppler-0-73-on-ubuntu-18-04/1112947#1112947) (testé avec Ubuntu 18.04).
+To work with the `PDF`, I used the [rOpenSci’s Jeroen Ooms’ `pdftools` package](https://github.com/ropensci/pdftools). If you don't know this package, I really encourage you to take a look at it as well as [Maëlle Salmon's post about Trump's PDF schedule](https://masalmon.eu/2019/02/11/trump-schedule/). For Ubuntu users, installation of `pdftools` can be challenging as the required latest version of Poppler is not available on Linux. I found [this thread](https://askubuntu.com/questions/1112856/how-to-install-poppler-0-73-on-ubuntu-18-04/1112947#1112947) really useful to deal with the problem (tested on Ubuntu 18.04).
 
-### Importer les données d'un `PDF`
+### Importing data from a `PDF`
 
-La fonction `pdf_data` du package `pdftools` est particulièrement utile pour importer des donnnées depuis un `PDF`. Cette fonction renvoie une liste de `data.frame`, un par page du document, contenant une ligne par _boîte_ contenant du texte (i.e. entre deux zones sans texte comme les espaces) et les colonnes correspondant à la taille, aux coordonnées et à la valeur de ces _boîtes_.
+Package `pdftools` has a powerful function, called `pdf_data`, to import data from a `PDF`. This function returns a list of `data.frame`, one per pages in the file, with one row for each text box and columns corresponding to sizes, coordinates and values of these text boxes.
 
 ```{r pdfimport}
 library(pdftools)
@@ -52,7 +53,7 @@ metapdf <- pdf_data("2019-04-03-pdf-vs-html_files/test_form.pdf")
 head(metapdf[[1]])
 ```
 
-Cette fonction est vraiment parfaite pour ce travail car le format de l'objet qu'elle renvoie est très proche du format final désiré. Il suffit de ne faire qu'un `data.frame` à partir de tous ceux présents dans la liste en prenant soin de garder un identifiant pour les pages du document.
+This function was perfect as the returned format was nearly the same as the one I wanted. To really obtained the final format, I just bound all data frames by row being careful of keeping a pages identifier.
 
 ```{r bindpages}
 library(pdftools)
