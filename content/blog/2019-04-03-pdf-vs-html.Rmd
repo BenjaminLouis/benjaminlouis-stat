@@ -16,11 +16,11 @@ knitr::opts_chunk$set(
   message = FALSE)
 ```
 
-Il y a quelques mois, j'ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les [10 commandements d’une base de données réussie](https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/), un sérieux travail de nettoyage était nécessaire. Les titres des questions et les choix possibles des réponses étaient nécessaires mais n'étaient pas fournis par le client  que I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. Alors que je cherchais comment les récupérer, deux choix s'offrait à moi : soit via le fichier `PDF` téléchargeable, soit via la page `HTML` directement. J'ai décidé de tester les deux possibilités.
+Il y a quelques mois, j'ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les [10 commandements d’une base de données réussie](https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/), un sérieux travail de nettoyage était nécessaire. Il me fallait pour cela les titres des questions et les choix possibles des réponses mais ils n'étaient pas fournis par le client. Alors que je cherchais comment les récupérer, deux choix s'offrait à moi : soit via le fichier `PDF` téléchargeable, soit via la page `HTML` directement. J'ai décidé de tester les deux possibilités d'extraction de données.
 
 ## Quels outils pour quel résultat
 
-En plus de packages spécifiques présentés plus tard, ce travail est avant tout un travail de manipulation de données et évidemment les packages du [tidyverse](https://www.tidyverse.org/) vont nous être utils : [dplyr](https://dplyr.tidyverse.org/) pour la manipulation de données en général, [purrr](https://purrr.tidyverse.org/) pour la programmation fonctionnelle et [stringr](https://stringr.tidyverse.org/) pour la manipulation de chaîne de caractères.
+En plus de packages spécifiques présentés plus tard, ce travail est avant tout un travail de manipulation de données et évidemment les packages du [tidyverse](https://www.tidyverse.org/) vont nous être utiles : [dplyr](https://dplyr.tidyverse.org/) pour la manipulation de données en général, [purrr](https://purrr.tidyverse.org/) pour la programmation fonctionnelle et [stringr](https://stringr.tidyverse.org/) pour la manipulation de chaîne de caractères.
 
 ```{r package}
 library(dplyr)
@@ -28,23 +28,23 @@ library(purrr)
 library(stringr)
 ```
 
-Le questionnaire Google original étant confidentiel, j'en ai créé un factice en mixant plusieurs modèles proposés par Google. J'ai pu facilement télécharger le fichier `PDF` correspondant. Pour la version `HTML`, j'ai d'abord essayer d'atteindre directement la page depuis la version éditable du questionnaire à l'aide du package [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/), mais j'ai perdu la bataille contre la double authentification de Google. Si quelqu'un a une solution pour ce problème, je suis preneur ! Tant pis pour le classique _webscraping_, j'ai opté pour la sauvegarde de la page `HTML` depuis mon navigateur pour travailler en local. L'ensemble des documents sont disponibles [ici](https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html).
+Le questionnaire Google original étant confidentiel, j'en ai créé un factice en mixant plusieurs modèles proposés par Google. J'ai pu facilement télécharger le fichier `PDF` correspondant. Pour la version `HTML`, j'ai d'abord essayer d'atteindre directement la page depuis la version éditable du questionnaire à l'aide du package [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/), mais j'ai perdu la bataille contre la double authentification de Google. Si quelqu'un a une solution pour ce problème, je suis preneur ! Tant pis pour le classique _webscraping_, j'ai opté pour la sauvegarde de la page `HTML` depuis mon navigateur pour travailler en local. L'ensemble des documents est disponible [ici](https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html).
 
-À partir de ces fichiers, je cherchais à obtenir un `data.frame` final contenant 3 colonnes :
+À partir de ces fichiers, je cherche à obtenir un `data.frame` final contenant 3 colonnes :
 
 + `questions` : les titres des questions
 
-+ `types` : le [type des questions](https://support.google.com/docs/answer/7322334?hl=fr) qui peut prendre 4 valeurs : `unique` pour des questions à choix multiples avec une seul réponse possible, `multiple` pour des questions à choix multiples avec plusieurs réponses possibles, `free` pour les questions avec réponse libre et `grid` pour les grilles à choix multiples.
++ `types` : le [type des questions](https://support.google.com/docs/answer/7322334?hl=fr) qui peut prendre 4 valeurs : `unique` pour des questions à choix multiple avec une seule réponse possible, `multiple` pour des questions à choix multiple avec plusieurs réponses possibles, `free` pour les questions avec réponse libre et `grid` pour les grilles à choix multiples.
 
-+ `choices` : une [liste-colonne](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html) dont chaque ligne est un vecteur des choix possibles de réponse pour les quesitons `unique` et `multiple`, un vecteur dont les éléments sont nommés pour les questions `grid` (les noms correspondant à ligne1, ligne2, ..., colonne1, ... de la grille) et un vecteur d elongueur 0 pour les questions `free`.
++ `choices` : une [liste-colonne](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html) dont chaque ligne est un vecteur des choix possibles de réponse pour les questions `unique` et `multiple`, un vecteur dont les éléments sont nommés pour les questions `grid` (les noms correspondant à ligne1, ligne2, ..., colonne1, ... de la grille) et un vecteur de longueur 0 pour les questions `free`.
 
 ## `pdftools` à l'essai
 
-Pour travailler avec le fichier `PDF`, j'ai utilisé le [package rOpenSci `pdftools` développé par Jeroen Ooms’](https://github.com/ropensci/pdftools). Si vous ne connaissez pas ce package, je vous encourage vivement à y jeter un oeil ainsi qu'à [l'article de Maëlle Salmon sur l'emploi du temps de Trump](https://masalmon.eu/2019/02/11/trump-schedule/). Pour les utilisateurs d'Ubuntu, l'installation de `pdftools` peut s'avérer délicate car la dernière version de Poppler n'est pas disponible sur Linux. J'ai réussi grâce à [cette discussion](https://askubuntu.com/questions/1112856/how-to-install-poppler-0-73-on-ubuntu-18-04/1112947#1112947) (testé avec Ubuntu 18.04).
+Pour travailler avec le fichier `PDF`, j'utilise le [package rOpenSci `pdftools` développé par Jeroen Ooms’](https://github.com/ropensci/pdftools). Si vous ne connaissez pas ce package, je vous encourage vivement à y jeter un oeil ainsi qu'à [l'article de Maëlle Salmon sur l'emploi du temps de Trump](https://masalmon.eu/2019/02/11/trump-schedule/). Pour les utilisateurs d'Ubuntu, l'installation de `pdftools` peut s'avérer délicate car la dernière version de Poppler n'est pas disponible sur Linux. J'ai réussi grâce à [cette discussion](https://askubuntu.com/questions/1112856/how-to-install-poppler-0-73-on-ubuntu-18-04/1112947#1112947) (testé avec Ubuntu 18.04).
 
 ### Importer les données d'un `PDF`
 
-La fonction `pdf_data` du package `pdftools` est particulièrement utile pour importer des donnnées depuis un `PDF`. Cette fonction renvoie une liste de `data.frame`, un par page du document, contenant une ligne par _boîte_ contenant du texte (i.e. entre deux zones sans texte comme les espaces) et les colonnes correspondant à la taille, aux coordonnées et à la valeur de ces _boîtes_.
+La fonction `pdf_data` du package `pdftools` est particulièrement utile pour importer des donnnées depuis un `PDF`. Cette fonction renvoie une liste de `data.frame`, un par page du document, contenant une ligne par _"boîte"_ contenant du texte (i.e. texte entre deux zones sans texte tel que des espaces) et les colonnes correspondant à la taille, aux coordonnées et à la valeur de ces _"boîtes"_.
 
 ```{r pdfimport}
 library(pdftools)
@@ -52,20 +52,20 @@ metapdf <- pdf_data("2019-04-03-pdf-vs-html_files/test_form.pdf")
 head(metapdf[[1]])
 ```
 
-Cette fonction est vraiment parfaite pour ce travail car le format de l'objet qu'elle renvoie est très proche du format final désiré. Il suffit de ne faire qu'un `data.frame` à partir de tous ceux présents dans la liste en prenant soin de garder un identifiant pour les pages du document.
+La fonction est vraiment parfaite pour ce travail car le format de l'objet qu'elle renvoie est très proche du format final désiré. Il suffit de construire un unique `data.frame` à partir de tous ceux présents dans la liste en prenant soin de garder un identifiant des pages du document.
 
 ```{r bindpages}
 library(pdftools)
 metapdf <- bind_rows(metapdf, .id = "page")
 ```
 
-And that's it ! With only one function used once, all the wanted data were extracted from the `PDF`. The rest is "just" data wrangling. At this point, I was convinced that the work was nearly finished but tidying the data frame meant finding some rules to get the finale data frame from the ones returned by the function. And finding these rules was not as obvious as I thought.
+Et voilà ! Avec cette unique fonction utilisée une seule fois, toutes les données désirées ont été extraites du `PDF`. Il ne reste plus qu'à remanier les données... ce que j'imaginais très simple avant de vraiment me plonger dedans ! Nettoyer ces données signifient ici trouver des règles pour éliminer ce qui ne nous intéressent pas et mettre en bon format ce qui nous intéressent. En pratique, trouver ces règles n'a pas été aussi simple que j'imaginais.
 
-### Tidying 
+### Nettoyage 
 
-__Putting lines together__
+__Rassembler les lignes__
 
-I selected all text boxes with a height equal to 10 as it seemed to be the height for question titles and answer choices. I then decided to reduce the data frame from one row per text box to one row per line in the `PDF`. The _what-I-believed-being-an-acceptable-assumption_ was that all text boxes were in a same line if, in a page, they share the same `y`-coordinate. I collapsed text boxes sharing the same `y`-coordinate in a new column called `lines` and removed duplicated row based on this new column.
+Il faut d'abord sélectionner toutes les boîtes de texte dont la hauteur est égale à 10, hauteur qui semble être la hauteur pour les intitulés des questions et les réponses possibles. Le tableau de données qui a une ligne par boîte de texte est ensuite réduit à une ligne par ligne dans le `PDF`. Pour cela, l'hypothèse qui semble raisonnable est que les textes qui appartiennent à la même ligne du document ont une coordonnée `y` égale sur une même page. Les textes partageant la même coordonnée `y` sont donc réunis dans une nouvelle colonne nommée `lines`.
 
 ```{r pdflines}
 metapdf <- metapdf %>%
@@ -76,9 +76,9 @@ metapdf <- metapdf %>%
   ungroup()
 ```
 
-__Identifying sentences__
+__Identifier les phrases__
 
-The second step was to identifying "sentences" among lines. The idea here was that a sentence starts either by one or two digits following by a dot and a space (question titles) or by an uppercase letter following by a lowercase letter or a space (answer choices). If a question title or an answer choice spreads on several lines of the `PDF`, I wanted to be able to consider all lines in the same sentence. I created a `sentences_group` column by a) detecting each text box starting a sentence using [regular expressions](https://stringr.tidyverse.org/articles/regular-expressions.html), b) applying a cumulative sum on the boolean so each line belonging to the same sentence have the same sum value and c) transforming to string by adding a prefix. This column helped me collapsing sentences and removing duplicated ones.
+La deuxième étape consiste à identifier les "phrases" présentent dans les lignes. L'idée générale ici est qu'une phrase commence soit par un ou deux chiffres suivis par un point puis un espace (pour les intitulés des questions) soit par une lettre majuscule suivie d'une lettre minuscule ou d'un espace (pour les réponses possibles). Il faut également pouvoir identifier les phrases qui se retrouvent sur plusieurs lignes. La colonne `sentences_group` est crée en a) détectant chaque boîte de texte commençant une phrase à l'aide d'[expressions régulières](https://stringr.tidyverse.org/articles/regular-expressions.html), b) en appliquant une somme cumulée sur le booléen ainsi obtenu afin que chaque ligne appartenant à la même phrase ait la même somme et c) en ajoutant le prefix `sent` à cette somme. Cette colonne permet de réunir les phrases présentes sur plusieurs lignes et de supprimer celles qui sont présentent plusieurs fois.
 
 ```{r pdfsentences} 
 metapdf <- metapdf %>%
@@ -92,9 +92,9 @@ metapdf <- metapdf %>%
 select(metapdf, lines, sentences_group, sentences)
 ```
 
-__Distinguishing question blocs__
+__Identifier les blocs de question__
 
-The method used to create column `sentences_group` was used to create column `question_bloc` which identifies the lines that belong to the same question i.e. the question titles and the answer choices. Value `bloc0` corresponded to text before the first question so I removed it.
+La méthode précédente aboutissant à la colonne `sentences_group` est également utilisée pour créer la colonne `question_bloc` qui identifie les lignes qui appartiennent à la même question i.e. l'intitulé et les réponses possibles. Les lignes ayant la valeur `bloc0` correspondent au texte d'introduction avant les questions et sont donc supprimées.
 
 ```{r pdfblocs}
 metapdf <- metapdf %>%
@@ -102,9 +102,9 @@ metapdf <- metapdf %>%
   filter(question_bloc != "bloc0")
 ```
 
-__Getting question types__
+__Obtenir le type de question__
 
-For each question bloc, I was able to get the questions types thanks to the default behavior of Google Forms adding a sentence after each question title to specify how many answers can be given. These sentences were then removed and an identifier was given for sentences in each question bloc.
+Pour chaque bloc de question, le type de question associé est obtenu grâce à un comportement par défaut des formulaires Google qui ajoute une phrase après chaque intitulé de question pour préciser combien de réponses sont possibles.
 
 ```{r pdftypes} 
 metapdf <- metapdf %>%
@@ -118,9 +118,9 @@ metapdf <- metapdf %>%
   mutate(id = 1:n()) 
 ```
 
-__Isolating questions and answer choices__
+__Isoler les questions et réponses possibles__
 
-The previously created identifier (`id`) enables the differenciation between question titles (`id == 1`) and answer choices (`id != 1`). However, `grid` needed a particular treatment as `id == 2` corresponded to columns names and others `id`s corresponded to rows names. I first isolated this values, then created the `choices` and `questions` columns to finally put back answer choices values for `grid` questions.
+L'identifiant précedemment créé (`id`) permet la différenciation entre les intitulés des questions (`id == 1`) et les réponses possibles (`id != 1`). Les questions de type `grid` ont besoin d'un traitement particulier, `id == 2` correspondant aux noms des colonnes tandis que les autres `id` correspondent aux noms des lignes. Ces valeurs sont d'abord isolées puis les colonnes `choices` and `questions` sont créées pour finalement réunir de nouveau les réponses possibles des questions de type `grid`.
 
 ```{r pdfchoices}
 # Grid question
@@ -142,22 +142,22 @@ metapdf <- metapdf %>%
 metapdf$choices[metapdf$types == "grid"] <- list(c(row = rows, column = columns))
 ```
 
-__Cleaning__
+__Nettoyage__
 
-The last step was to do some cleaning. I removed the `*` that was present at the end of question titles where an answer was required.
+La dernière étape correspond à du nettoyage. Le symbole `*` est retiré des intitulés de question où la réponse est obligatoire.
 
 ```{r pdfclean}
 metapdf <- metapdf %>% mutate(questions = str_replace(questions, "\\*", "") %>% str_trim)
 metapdf
 ```
 
-## A try with `rvest`
+## `rvest` à l'essai
 
-If you have never heard about `HTML` and `CSS`, maybe what comes after will be a bit obscure but I think this is unlikely. Content of a web page is stored in `HTML` page and webscraping is collecting these data. This is why the [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) package was made for and I obviously used it for this task
+Si vous n'avez jamais entendu parler de `HTML` et `CSS`, il est possible que ce qui va suivre sera un peu obscure. Le contenu d'une page web est stocké en `HTML` et il est possible de récupérer ce contenu à l'aide de package tel que [rvest](https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/) (c'est ce qu'on appelle du webscrapping).
 
-### rvest, selectorGadget and CSS selector
+### rvest, selectorGadget et les sélecteurs CSS
 
-Basically, a `HTML` page has a tree structure (called a DOM for _Document Object Model_) where each node contains objects. Function `read_html` makes possible to read and import this DOM into R.
+De manière très brève, une page `HTML` a une structure en arbre (appelé un DOM pour _Document Object Model_) où chaque noeud contient des objets. La fonction `read_html` permet de lire et importer le DOM dans R.
 
 ```{r htmlimport}
 library(rvest)
@@ -166,25 +166,25 @@ form
 form %>% html_nodes("body") %>% html_children() %>% length()
 ```
 
-The first node of our page is called `html` and contains two children nodes called respectively `head` and `body`. If we take a look at the children nodes of `body`, we see that there are 23 of them. These nodes can have children too and so on. 
+Le premier noeud de notre page est appelé `html`  et contient deux noeuds enfants appelés respectivement `head` et `body`. Si on jette un oeil aux noeuds enfants de `body`, on voit qu'il en existe 23. Ces noeuds peuvent également avoir des noeuds enfants et ainsi de suite. 
 
-Structure of a node looks like `<name attr1 = "value1" attr2 = "value2"> object </name>` where `<name>...</name>` is a tag (with a specific name) which can have several attributes (`attr1`, `attr2`) with specific values (`"value1`, `"value2"`). Tags delimit objects that can be other nodes or text content of the `HTML` page.
+La structure d'un noeud ressemble à `<name attr1 = "value1" attr2 = "value2"> object </name>` où `<name>...</name>` est une balise (avec un nom spécifique) qui peut avoir plusieurs attributs (`attr1`, `attr2`) ayant des valeurs spécifiques (`"value1`, `"value2"`). Les balises délimitent des objets qui peuvent être d'autre noeuds ou du texte présent sur la page `HTML`.
 
-Nodes attributes can be `CSS` selectors. These are used to link nodes to `CSS` stylesheet which defined how content of the node will be displayed on a web browser. Name of these attributes are either `id` or `class`. `CSS` selectors are like identifiers of nodes and this is how they are used in webscraping by selecting nodes with specific  `id` or `class`.
+Les attributs des noeuds peuvent être des sélecteurs `CSS`. Ils sont utilisés pour lier les noeuds aux feuilles de style `CSS` qui définissent comment le contenu d'un noeud est affiché sur le navigateur web. Le nom de ces attributs est soit `id` ou `class`. Les sélecteurs `CSS` peuvent être utilisés comme des identifiants des noeuds lorsque l'on récupère du contenu web.
 
-The real challenge here is to use the right `CSS` selectors. This is where [SelectorGadget](https://selectorgadget.com/) steps in. As [Hadley Wickham](http://hadley.nz/) wrote in  [this vignette of rvest package](https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html), _"Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page."_ SelectorGadget is easy to use and the corresponding vignette makes clear how to use it so I won't explain it in details in this post. 
+Le principal défi est d'utiliser le bon sélecteur `CSS`. Pour cela, l'outil [SelectorGadget](https://selectorgadget.com/) est très utile. Comme l'écrit [Hadley Wickham](http://hadley.nz/) dans [cette vignette du package rvest](https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html), _"Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page."_ (SelectorGadget est un outil javascript qui permet de distinguer interactivement les sélecteurs CSS nécessaires pour l'extraction d'un contenu désiré dans une page). SelectorGadget est facile d'utilisation et la vignette l'explique suffisamment clairement pour que je ne le détaille pas ici.
 
-### Scraping the data
+### Récupérer les données
 
-__Question blocs__
+__blocs de question__
 
 
 [![selectorgadget](/blog/2019-04-03-pdf-vs-html_files/sg.png){width=30%}](/blog/2019-04-03-pdf-vs-html_files/sg.png)
 
 
-Question blocs (question titles + answer choices) were contained in nodes with `freebirdFormeditorViewItemContent` value for `CSS` class.
+Les blocs de question (intitulé + réponses possibles) sont contenus dans des noeuds ayant comme classe `CSS` `freebirdFormeditorViewItemContent`.
 
-In this image (click to enlarge), GadgetSelector tells us that there are 18 nodes with these class value when there are only 9 questions in the questionnaire. I wasn't able to precisely identify what were the extra 9 but I was able to determine how selecting the 9 ones of interest : they all contained a node with `CSS` class equal to `freebirdFormeditorViewItemMinimizedTitleRow` that itself contained a text corresponding to the question title. 
+Dans cette image (cliquer pour agrandir), GadgetSelector nous dit qu'il y a 18 noeuds ayant cette classe alors qu'il y seulement 9 questions dans le questionnaire. Je n'ai pu précisément identifier à quoi correspondent les 9 supplémentaires mais il s'avère que les 9 qui nous intéressent contiennent tous un noeud avec une classe `CSS` égale à `freebirdFormeditorViewItemMinimizedTitleRow` qui lui-même contient un texte correspondant à l'intitulé de la question. 
 
 
 ```{r htmlblocs}
@@ -195,9 +195,9 @@ question_blocs <- form %>%
          length() != 0)
 ```
 
-__Question titles__
+__Intitulé des questions__
 
-As previously said, question titles were stored in nodes with class value equal to `freebirdFormeditorViewItemMinimizedTitleRow`.
+Comme précédemment énoncé, l'intitulé des questions sont stockés dans des noeuds avec la classe `freebirdFormeditorViewItemMinimizedTitleRow`.
 
 ```{r htmlquestions}
 questions <- question_blocs %>%
@@ -206,13 +206,13 @@ questions <- question_blocs %>%
 questions
 ```
 
-__Answer choices and question types__
+__Réponses possibles et type de question__
 
-The next step was to get answer choices and question types by applying a function on each question bloc. This function contained `if..else...` statements depending on the type of questions. 
+La prochaine étape consiste à isoler les réponses possibles et les types des questions en appliquant un fonction sur chaque bloc de question. Cette fonction contient des conditions de type `if..else...` qui dépendent du type de la question. 
 
-Both kind of multiple choices questions were in nodes with class `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList` class. Answer choices were stored in attributes `value` in nodes with class `exportInput` and attribute `aria-label` equal to `"option value"`. Some of these questions allowed an _"Other"_ option as answer choice - this option required a special treatment as it was stored in different kind of nodes. Besides, question types between `unique` and `multiple` depended on `data-list-type` attribute value from the node with class `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList`.
+Les deux types de question à choix multiple sont dans des noeuds avec la classe `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList`. Les réponses possibles sont stockées dans les attributs `value` des noeuds ayant pour classe `exportInput` et l'attribut `aria-label` égal à `"option value"`. Certaines de ces questions permettent de répondre une option autre (_"Other"_) - cette option nécessite un traitement spécial car stockée dans un autre type de noeud. De plus, le choix des types de question entre `unique` et `multiple` dépend de la valeur de l'attribut `data-list-type` des noeuds ayant comme classe `freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList`.
 
-`Grid` question were in question bloc that contains a node with class `freebirdFormeditorViewQuestionBodyGridbodyRow`. Text of nodes with only this class value corresponded to row names of the grid. Column names were stored as text in nodes with class `freebirdFormeditorViewQuestionBodyGridbodyCell` which were present in nodes with class `freebirdFormeditorViewQuestionBodyGridbodyColumnHeader`.
+Les questions de type `Grid` sont dans des blocs de question qui contiennent un noeud avec la classe `freebirdFormeditorViewQuestionBodyGridbodyRow`. Le texte des noeuds ayant uniquement cette classe correspond aux noms des lignes de la grille. Le nom des colonnes est stocké comme texte dans un noeud avec la classe `freebirdFormeditorViewQuestionBodyGridbodyCell` présent dans des noeuds avec la classe `freebirdFormeditorViewQuestionBodyGridbodyColumnHeader`.
 
 ```{r htmlchoices}
 # To make code smaller
@@ -261,9 +261,9 @@ get_choices_and_types <- function(.nd) {
 choices_types <- map_dfr(question_blocs, get_choices_and_types)
 ```
 
-__Cleaning__
+__Nettoyage__
 
-Finally, the last step was to bind data of interest and apply the same cleaning as with the `PDF`.
+Finalement, la dernière étape correspond à relier les différentes données et d'appliquer le même nettoyage que pour le fichier `PDF`.
 
 ```{r htmlclean}
 metahtml <- bind_cols(questions = paste0(1:9, ". ", unlist(questions)), choices_types)
@@ -273,18 +273,17 @@ metahtml
 
 # Conclusion
 
-We can first check if all columns in `metapdf` and `metahtml` are equals.
+On peut commencer par vérifier que les deux tableaux de données `metapdf` et `metahtml` correspondent.
 
 ```{r conclusion}
 map2(metapdf, metahtml, all.equal)
 ```
 
-With two different kind of files, I was able to get the same result thanks to two amazing packages : `pdftools` and `rvest`. Scraping the `HTML` page could have been made with `xml2` package as lots of `rvest` functions are wrappers around `xml2` functions. The main difference is that `xml2` functions only accept [xpath](https://www.w3schools.com/xml/xpath_intro.asp) expressions which from my point of view has a non easy syntax to master (but maybe I'm lazy). However, you can get xpath expressions from GadgetSelector which helps their utilisation along.
+Avec deux types différents de fichiers, il a été possible d'obtenir le même résultat grâce à deux packages vraiement utiles : `pdftools` et `rvest`. Récupérer les données depuis la page `HTML` aurait pu être effectuée avec le package `xml2`  car beaucoup des fonctions de `rvest` utilisées reposent sur les fonctions de `xml2`. La principale différence est que `xml2` accepte uniquement des expressions [xpath](https://www.w3schools.com/xml/xpath_intro.asp) qui de mon point de vue ont une syntaxe plus difficile à maitriser. Cependant, il est possible d'obtenir les expressions xpath depuis GadgetSelector.
 
-It was not the purpose of this work to tell if one way of extracting information is better than the other. I had fun with both and I was amazed by the power of both packages. There will be days when I'll have to work with `PDF`, and I know that I can count on `pdftools` for that, as much as I am more than convinced by `rvest` to help me during my future webscraping.
+L'objectif de ce travail n'était pas de définir si un des deux moyens d'extraire des données est meilleur que l'autre. J'ai pris du plaisir dans les deux cas et j'ai été plutôt surpris par la puissance des deux packages utilisés. Lorsque que j'aurais besoin de travailler à partir de fichiers `PDF`, je pourrais compter sur `pdftools` sans problème, autant que je pourrais compter sur `rvest` pour extraire des données depuis le web.
 
-If I had one difference to point out is that rules to wrangle data from the `PDF` strongly depend on how the `PDF` file is structured. The large diversity of possible structure probably makes difficult to define a reproducible strategy while for `HTML` page strategy is always the same : find value of `CSS` selectors for the data you want with SelectorGadget and apply the appropriate function to extract it. In the end, it might not be faster but it sure makes the workflow more obvious.
+S'il fallait pointer une différence, c'est que les règles utilisées pour arranger les données extraites du `PDF` dépendent fortement de la structure du `PDF`. La grande diversité des structures possibles rend probablement difficile la définition d'une stratégie reproductible tandis que pour les pages `HTML`, la stratégie est toujours la même : trouver les valeurs des sélecteurs `CSS` pour les données voulues à l'aide de SelectorGadget et appliquer la fonction appropriée pour les extraire. Au final, ce n'est peut être pas plus rapide mais cela rend le flux de travail plus évident.
 
-I hope you enjoyed reading this first post as much as I enjoyed writing it. Don't be shy ! Leave a comment for anything and let me know if you would have handled things differently.
-
+J'espère que vous avez pris plaisir à lire ce premier article autant que j'en ai pris à l'écrire. N'hésitez pas à laisser un commentaire et dites-moi si vous auriez fait les choses différemment.
 
