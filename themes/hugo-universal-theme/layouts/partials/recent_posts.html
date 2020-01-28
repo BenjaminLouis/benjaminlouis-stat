@@ -20,10 +20,11 @@
                 <!--  replaced by : $posts := .Paginate (where (where .Data.Pages "Type" "blog") ".Params.level" "1") -->
                {{ $posts := .Paginate (where .Data.Pages "Type" "blog") }}
                 {{ range first 3 $posts.Pages }}
+                <p>Titre : {{ .Title }}</p>
                 <div class="col-md-4 col-sm-6">
                     <div class="box-image-text blog">
                         <div class="top">
-                           <!-- <div class="image" style="overflow:hidden">
+                            <div class="image" style="overflow:hidden">
                                 {{ if isset .Params "banner" }}
                                 <img src="{{ .Site.BaseURL}}{{ .Params.banner }}" class="img-responsive" alt="" >
                                 {{ else }}
@@ -35,16 +36,7 @@
                                 <p class="buttons">
                                     <a href="{{ .Permalink }}" class="btn btn-template-transparent-primary"><i class="fa fa-link"></i> {{ i18n "readMore" }}</a>
                                 </p>
-                            </div>-->
-                            <div class="image">
-                                      <a href="{{ .Permalink }}">
-                                          {{ if .Params.banner }}
-                                          <img src="{{ .Site.BaseURL}}{{ .Params.banner }}" class="img-responsive" alt="">
-                                          {{ else }}
-                                          <img src="{{ .Site.BaseURL}}img/placeholder.png" class="img-responsive" alt="">
-                                          {{ end }}
-                                      </a>
-                                  </div>
+                            </div>
                         </div>
 
                         <div class="content">
