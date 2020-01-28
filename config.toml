@@ -1,5 +1,6 @@
-baseurl = "/"
+#baseurl = "/"
 #baseurl = "https://www.benjaminlouis-stat.fr/"
+baseurl = "https://benjaminlouis-stat.netlify.com/"
 title = "Benjamin Louis | Data Scientist - Expertise R - Consultance et Formation"
 theme = "hugo-universal-theme"
 languageCode = "en-us"
@@ -12,7 +13,7 @@ googleAnalytics = "UA-117750022-1"
 # Ignoring
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 # For good rendering in local
-relativeURLs = false
+relativeURLs = true
 
 # Define the number of posts per page
 paginate = 10
