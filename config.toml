@@ -12,7 +12,7 @@ googleAnalytics = "UA-117750022-1"
 # Ignoring
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 # For good rendering in local
-relativeURLs = true
+relativeURLs = false
 
 # Define the number of posts per page
 paginate = 10
