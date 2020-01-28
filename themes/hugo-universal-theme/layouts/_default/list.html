@@ -21,9 +21,11 @@
                     <!-- *** LEFT COLUMN *** -->
 
                     <div class="col-md-9" id="blog-listing-medium">
-
-                        {{ $paginator := .Paginate (where .Data.Pages "Type" "blog") }}
-                        {{ range $paginator.Pages }}
+                        
+                        <!--  old code : $paginator := .Paginate (where .Data.Pages "Type" "blog")  -->
+                <!--  replaced by : $paginator := .Paginate (where (where .Data.Pages "Type" "blog") ".Params.level" "1") -->
+                {{ $paginator := .Paginate (where .Data.Pages "Type" "blog") }}
+                {{ range first 3 $paginator.Pages }}
                         <section class="post">
                             <div class="row">
                                 <div class="col-md-4">
@@ -56,7 +58,11 @@
                                         </p>
                                     </div>
                                     <p class="intro">{{ .Summary }}</p>
-                                    <p class="read-more"><a href="{{ .Permalink }}" class="btn btn-template-main">{{ i18n "continueReading" }}</a>
+                                    <p class="read-more"><a href="{{ .Permalink }}" class="btn btn-template-main">{{ i18n "continueReading" }}</a>{{ if .IsTranslated }} |
+    {{ range .Translations }}
+    <a href="{{ .Permalink }}"><img src =  '{{"img/flags/"| absURL }}{{ .Language.LanguageName }}.png' alt = "{{ .Language.LanguageName }}" class = "flags"></a>
+    {{ end }}
+{{ end }}
                                     </p>
                                 </div>
                             </div>

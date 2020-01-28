@@ -1,0 +1,200 @@
+---
+title: 'PDF vs HTML : Extracting information from a Google Form with R'
+author: "Benjamin Louis"
+date: '2019-04-03'
+tags: ["pdftools", "rvest", "Google From", "R"]
+categories: ["Data-wrangling"]
+banner: 'img/banners/pdf-vs-html.png' 
+Summary: 'test summary'
+level: 2
+---
+
+
+
+<p>A couple months ago, I had to analyse responses from a questionnaire. I needed to tidy the dataset downloaded from Google Forms as it did not respect the <a href="https://rtask.thinkr.fr/blog/the-ten-commandments-for-a-well-formatted-database/">10 commandments for a well-formated database</a>. I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. When I decided to get them, two choices were possible : either from the downloaded <code>PDF</code> file or from the <code>HTML</code> page of the form. And I said to myself, why not trying both ?</p>
+<div id="what-we-need-what-we-want" class="section level2">
+<h2>What we need, what we want</h2>
+<p>Besides specific packages presented later, this work is all about manipulating data and of course, <a href="https://www.tidyverse.org/">tidyverse</a> packages are our friends here. I used <a href="https://dplyr.tidyverse.org/">dplyr</a> for general data manipulation, <a href="https://purrr.tidyverse.org/">purrr</a> for fonctionnal programming and <a href="https://stringr.tidyverse.org/">stringr</a> for strings manipulation.</p>
+<pre class="r"><code>library(dplyr)
+library(purrr)
+library(stringr)</code></pre>
+<p>As I cannot publicly share the orginal questionnaire, I made a dummy one from my Google account by mixing proposed templates. The <code>PDF</code> file could be easily downloaded from the Google Form account. For <code>HTML</code>, I first wanted to directly reach the page from the editable version of the questionnaire, using the <a href="https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/">rvest</a> package, but I never succeeded as it seems Google double authentification makes things difficult. If somebody with better skills for this kind of problem have a solution, I’ll take it ! Instead of performing classic webscraping, I saved the <code>HTML</code> page from my browser and worked with the file locally. All materials are available <a href="https://github.com/BenjaminLouis/blog_materials/tree/master/2019-03-29-pdf-vs-html">here</a>.</p>
+<p>From these files, the goal is to get a final <code>data.frame</code> with three columns :</p>
+<ul>
+<li><p><code>questions</code> : the questions’ titles</p></li>
+<li><p><code>types</code> : the <a href="https://support.google.com/docs/answer/7322334?hl=en">types of questions</a> which can take 4 values : <code>unique</code> for multiple choices questions with a unique answer, <code>multiple</code> for multiple choices questions with possibility of several answers, <code>free</code> for questions with free answer and <code>grid</code> for mutliple choices grid questions.</p></li>
+<li><p><code>choices</code> : a <a href="https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html">list-column</a> with each row being a vector of answer choices for <code>unique</code> and <code>multiple</code> questions, a named vector for <code>grid</code> questions (names coresponding to row1, row2, …, column1, …) and vector of length 0 for <code>free</code> questions</p></li>
+</ul>
+</div>
+<div id="a-try-with-pdftools" class="section level2">
+<h2>A try with <code>pdftools</code></h2>
+<p>To work with the <code>PDF</code>, I used the <a href="https://github.com/ropensci/pdftools">rOpenSci’s Jeroen Ooms’ <code>pdftools</code> package</a>. If you don’t know this package, I really encourage you to take a look at it as well as <a href="https://masalmon.eu/2019/02/11/trump-schedule/">Maëlle Salmon’s post about Trump’s PDF schedule</a>. For Ubuntu users, installation of <code>pdftools</code> can be challenging as the required latest version of Poppler is not available on Linux. I found <a href="https://askubuntu.com/questions/1112856/how-to-install-poppler-0-73-on-ubuntu-18-04/1112947#1112947">this thread</a> really useful to deal with the problem (tested on Ubuntu 18.04).</p>
+<div id="importing-data-from-a-pdf" class="section level3">
+<h3>Importing data from a <code>PDF</code></h3>
+<p>Package <code>pdftools</code> has a powerful function, called <code>pdf_data</code>, to import data from a <code>PDF</code>. This function returns a list of <code>data.frame</code>, one per pages in the file, with one row for each text box and columns corresponding to sizes, coordinates and values of these text boxes.</p>
+<pre class="r"><code>library(pdftools)
+metapdf &lt;- pdf_data(&quot;2019-04-03-pdf-vs-html_files/test_form.pdf&quot;)
+head(metapdf[[1]])</code></pre>
+<p>This function was perfect as the returned format was nearly the same as the one I wanted. To really obtained the final format, I just bound all data frames by row being careful of keeping a pages identifier.</p>
+<pre class="r"><code>library(pdftools)
+metapdf &lt;- bind_rows(metapdf, .id = &quot;page&quot;)</code></pre>
+<p>And that’s it ! With only one function used once, all the wanted data were extracted from the <code>PDF</code>. The rest is “just” data wrangling. At this point, I was convinced that the work was nearly finished but tidying the data frame meant finding some rules to get the finale data frame from the ones returned by the function. And finding these rules was not as obvious as I thought.</p>
+</div>
+<div id="tidying" class="section level3">
+<h3>Tidying</h3>
+<p><strong>Putting lines together</strong></p>
+<p>I selected all text boxes with a height equal to 10 as it seemed to be the height for question titles and answer choices. I then decided to reduce the data frame from one row per text box to one row per line in the <code>PDF</code>. The <em>what-I-believed-being-an-acceptable-assumption</em> was that all text boxes were in a same line if, in a page, they share the same <code>y</code>-coordinate. I collapsed text boxes sharing the same <code>y</code>-coordinate in a new column called <code>lines</code> and removed duplicated row based on this new column.</p>
+<pre class="r"><code>metapdf &lt;- metapdf %&gt;%
+  filter(height == 10) %&gt;%
+  group_by(page, y) %&gt;%
+  mutate(lines = str_c(text, collapse = &quot; &quot;)) %&gt;%
+  distinct(lines, .keep_all = TRUE) %&gt;%
+  ungroup()</code></pre>
+<p><strong>Identifying sentences</strong></p>
+<p>The second step was to identifying “sentences” among lines. The idea here was that a sentence starts either by one or two digits following by a dot and a space (question titles) or by an uppercase letter following by a lowercase letter or a space (answer choices). If a question title or an answer choice spreads on several lines of the <code>PDF</code>, I wanted to be able to consider all lines in the same sentence. I created a <code>sentences_group</code> column by a) detecting each text box starting a sentence using <a href="https://stringr.tidyverse.org/articles/regular-expressions.html">regular expressions</a>, b) applying a cumulative sum on the boolean so each line belonging to the same sentence have the same sum value and c) transforming to string by adding a prefix. This column helped me collapsing sentences and removing duplicated ones.</p>
+<pre class="r"><code>metapdf &lt;- metapdf %&gt;%
+  mutate(sentences_group = str_detect(lines,&quot;(^\\d{1,2}\\.\\s|^[:upper:]([:lower:]|\\s))&quot;) %&gt;% 
+           cumsum() %&gt;% 
+           paste0(&quot;sent&quot;, .)) %&gt;%
+  group_by(sentences_group) %&gt;%
+  mutate(sentences = str_c(lines, collapse = &quot; &quot;)) %&gt;%
+  distinct(sentences_group, .keep_all = TRUE) %&gt;%
+  ungroup()
+select(metapdf, lines, sentences_group, sentences)</code></pre>
+<p><strong>Distinguishing question blocs</strong></p>
+<p>The method used to create column <code>sentences_group</code> was used to create column <code>question_bloc</code> which identifies the lines that belong to the same question i.e. the question titles and the answer choices. Value <code>bloc0</code> corresponded to text before the first question so I removed it.</p>
+<pre class="r"><code>metapdf &lt;- metapdf %&gt;%
+  mutate(question_bloc = paste0(&quot;bloc&quot;, cumsum(str_detect(lines, &quot;^\\d{1,2}\\.\\s&quot;)))) %&gt;%
+  filter(question_bloc != &quot;bloc0&quot;)</code></pre>
+<p><strong>Getting question types</strong></p>
+<p>For each question bloc, I was able to get the questions types thanks to the default behavior of Google Forms adding a sentence after each question title to specify how many answers can be given. These sentences were then removed and an identifier was given for sentences in each question bloc.</p>
+<pre class="r"><code>metapdf &lt;- metapdf %&gt;%
+  group_by(question_bloc) %&gt;%
+  mutate(types = case_when(&quot;Check all that apply.&quot; %in% sentences ~ &quot;multiple&quot;,
+                           &quot;Mark only one oval.&quot; %in% sentences ~ &quot;unique&quot;,
+                           &quot;Mark only one oval per row.&quot; %in% sentences ~ &quot;grid&quot;,
+                           length(sentences) == 1 ~ &quot;free&quot;)) %&gt;%
+  filter(!is.element(sentences, c(&quot;Check all that apply.&quot;, &quot;Mark only one oval.&quot;,
+                                  &quot;Mark only one oval per row.&quot;))) %&gt;%
+  mutate(id = 1:n()) </code></pre>
+<p><strong>Isolating questions and answer choices</strong></p>
+<p>The previously created identifier (<code>id</code>) enables the differenciation between question titles (<code>id == 1</code>) and answer choices (<code>id != 1</code>). However, <code>grid</code> needed a particular treatment as <code>id == 2</code> corresponded to columns names and others <code>id</code>s corresponded to rows names. I first isolated this values, then created the <code>choices</code> and <code>questions</code> columns to finally put back answer choices values for <code>grid</code> questions.</p>
+<pre class="r"><code># Grid question
+columns &lt;- metapdf %&gt;% 
+  filter(types == &quot;grid&quot; &amp; id == 2) %&gt;% 
+  pull(sentences) %&gt;% 
+  str_split(&quot;\\s&quot;) %&gt;% 
+  unlist()
+rows &lt;- metapdf %&gt;% 
+  filter(types == &quot;grid&quot; &amp; !id %in% 1:2) %&gt;% 
+  pull(sentences)
+# Creating questions and choices columns
+metapdf &lt;- metapdf %&gt;% 
+  mutate(choices = list(sentences[-1])) %&gt;% 
+  ungroup %&gt;%
+  filter(id == 1) %&gt;%
+  select(questions = sentences, types, choices) 
+# Adding choices values for grid question
+metapdf$choices[metapdf$types == &quot;grid&quot;] &lt;- list(c(row = rows, column = columns))</code></pre>
+<p><strong>Cleaning</strong></p>
+<p>The last step was to do some cleaning. I removed the <code>*</code> that was present at the end of question titles where an answer was required.</p>
+<pre class="r"><code>metapdf &lt;- metapdf %&gt;% mutate(questions = str_replace(questions, &quot;\\*&quot;, &quot;&quot;) %&gt;% str_trim)
+metapdf</code></pre>
+</div>
+</div>
+<div id="a-try-with-rvest" class="section level2">
+<h2>A try with <code>rvest</code></h2>
+<p>If you have never heard about <code>HTML</code> and <code>CSS</code>, maybe what comes after will be a bit obscure but I think this is unlikely. Content of a web page is stored in <code>HTML</code> page and webscraping is collecting these data. This is why the <a href="https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/">rvest</a> package was made for and I obviously used it for this task</p>
+<div id="rvest-selectorgadget-and-css-selector" class="section level3">
+<h3>rvest, selectorGadget and CSS selector</h3>
+<p>Basically, a <code>HTML</code> page has a tree structure (called a DOM for <em>Document Object Model</em>) where each node contains objects. Function <code>read_html</code> makes possible to read and import this DOM into R.</p>
+<pre class="r"><code>library(rvest)
+form &lt;- read_html(&quot;2019-04-03-pdf-vs-html_files/test_form.html&quot;)
+form
+form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()</code></pre>
+<p>The first node of our page is called <code>html</code> and contains two children nodes called respectively <code>head</code> and <code>body</code>. If we take a look at the children nodes of <code>body</code>, we see that there are 23 of them. These nodes can have children too and so on.</p>
+<p>Structure of a node looks like <code>&lt;name attr1 = "value1" attr2 = "value2"&gt; object &lt;/name&gt;</code> where <code>&lt;name&gt;...&lt;/name&gt;</code> is a tag (with a specific name) which can have several attributes (<code>attr1</code>, <code>attr2</code>) with specific values (<code>"value1</code>, <code>"value2"</code>). Tags delimit objects that can be other nodes or text content of the <code>HTML</code> page.</p>
+<p>Nodes attributes can be <code>CSS</code> selectors. These are used to link nodes to <code>CSS</code> stylesheet which defined how content of the node will be displayed on a web browser. Name of these attributes are either <code>id</code> or <code>class</code>. <code>CSS</code> selectors are like identifiers of nodes and this is how they are used in webscraping by selecting nodes with specific <code>id</code> or <code>class</code>.</p>
+<p>The real challenge here is to use the right <code>CSS</code> selectors. This is where <a href="https://selectorgadget.com/">SelectorGadget</a> steps in. As <a href="http://hadley.nz/">Hadley Wickham</a> wrote in <a href="https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html">this vignette of rvest package</a>, <em>“Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page.”</em> SelectorGadget is easy to use and the corresponding vignette makes clear how to use it so I won’t explain it in details in this post.</p>
+</div>
+<div id="scraping-the-data" class="section level3">
+<h3>Scraping the data</h3>
+<p><strong>Question blocs</strong></p>
+<p><a href="/blog/2019-04-03-pdf-vs-html_files/sg.png"><img src="/blog/2019-04-03-pdf-vs-html_files/sg.png" alt="selectorgadget" style="width:30.0%" /></a></p>
+<p>Question blocs (question titles + answer choices) were contained in nodes with <code>freebirdFormeditorViewItemContent</code> value for <code>CSS</code> class.</p>
+<p>In this image (click to enlarge), GadgetSelector tells us that there are 18 nodes with these class value when there are only 9 questions in the questionnaire. I wasn’t able to precisely identify what were the extra 9 but I was able to determine how selecting the 9 ones of interest : they all contained a node with <code>CSS</code> class equal to <code>freebirdFormeditorViewItemMinimizedTitleRow</code> that itself contained a text corresponding to the question title.</p>
+<pre class="r"><code>prefix &lt;- function(.x) {paste0(&quot;.freebirdFormeditorView&quot;, .x)}
+question_blocs &lt;- form %&gt;%
+  html_nodes(prefix(&quot;ItemContent&quot;)) %&gt;%
+  keep(~html_nodes(.x, prefix(&quot;ItemMinimizedTitleRow&quot;)) %&gt;% 
+         length() != 0)</code></pre>
+<p><strong>Question titles</strong></p>
+<p>As previously said, question titles were stored in nodes with class value equal to <code>freebirdFormeditorViewItemMinimizedTitleRow</code>.</p>
+<pre class="r"><code>questions &lt;- question_blocs %&gt;%
+  html_nodes(prefix(&quot;ItemMinimizedTitleRow&quot;)) %&gt;%
+  html_text() 
+questions</code></pre>
+<p><strong>Answer choices and question types</strong></p>
+<p>The next step was to get answer choices and question types by applying a function on each question bloc. This function contained <code>if..else...</code> statements depending on the type of questions.</p>
+<p>Both kind of multiple choices questions were in nodes with class <code>freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList</code> class. Answer choices were stored in attributes <code>value</code> in nodes with class <code>exportInput</code> and attribute <code>aria-label</code> equal to <code>"option value"</code>. Some of these questions allowed an <em>“Other”</em> option as answer choice - this option required a special treatment as it was stored in different kind of nodes. Besides, question types between <code>unique</code> and <code>multiple</code> depended on <code>data-list-type</code> attribute value from the node with class <code>freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList</code>.</p>
+<p><code>Grid</code> question were in question bloc that contains a node with class <code>freebirdFormeditorViewQuestionBodyGridbodyRow</code>. Text of nodes with only this class value corresponded to row names of the grid. Column names were stored as text in nodes with class <code>freebirdFormeditorViewQuestionBodyGridbodyCell</code> which were present in nodes with class <code>freebirdFormeditorViewQuestionBodyGridbodyColumnHeader</code>.</p>
+<pre class="r"><code># To make code smaller
+get_xpath &lt;- function(.y) {
+  cl &lt;- str_replace(prefix(.y), &quot;\\.&quot;, &quot;&quot;)
+  paste0(&#39;.//*[@class=&quot;&#39;, cl,&#39;&quot;]&#39;)
+}
+# To get choices and types
+get_choices_and_types &lt;- function(.nd) {
+  
+  # Multiple choices questions
+  if (length(html_nodes(.nd, prefix(&quot;QuestionBodyChoicelistbodyOmniList&quot;))) != 0) {
+    # Answer choices
+    choices &lt;- html_nodes(.nd, &quot;.exportInput&quot;) %&gt;%
+      keep(~html_attr(.x, &quot;aria-label&quot;) == &quot;option value&quot;) %&gt;% 
+      html_attr(.,&quot;value&quot;)
+    # For &quot;Other&quot; option
+    other &lt;- html_nodes(.nd, prefix(&quot;OmnilistListPlaceholderOption&quot;)) %&gt;% 
+      html_attr(., &quot;style&quot;) != &quot;display:none&quot;
+    if (other) choices &lt;- c(choices, &quot;Other:&quot;)
+    # Question type
+    dltype &lt;- html_nodes(.nd, prefix(&quot;QuestionBodyChoicelistbodyOmniList&quot;)) %&gt;% 
+      html_attr(&quot;data-list-type&quot;)
+    if (dltype == &quot;1&quot;) type &lt;- &quot;multiple&quot; else type &lt;- &quot;unique&quot;
+  
+  # Grid question  
+  } else if (length(html_nodes(.nd, prefix(&quot;QuestionBodyGridbodyRow&quot;))) != 0) {
+    # Answer choices
+    choices &lt;- c(
+      row = html_nodes(.nd, xpath = get_xpath(&quot;QuestionBodyGridbodyRow&quot;)) %&gt;%
+        html_text(),
+      column = html_nodes(.nd, prefix(&quot;QuestionBodyGridbodyColumnHeader&quot;)) %&gt;%
+        html_nodes(xpath = get_xpath(&quot;QuestionBodyGridbodyCell&quot;)) %&gt;%  
+        html_text()
+    )
+    # Question type
+    type &lt;- &quot;grid&quot;
+  
+  # Free question  
+  } else {
+    choices &lt;- character(0)
+    type &lt;- &quot;free&quot;
+  }
+  return(tibble(types = type, choices = list(choices)))
+}
+choices_types &lt;- map_dfr(question_blocs, get_choices_and_types)</code></pre>
+<p><strong>Cleaning</strong></p>
+<p>Finally, the last step was to bind data of interest and apply the same cleaning as with the <code>PDF</code>.</p>
+<pre class="r"><code>metahtml &lt;- bind_cols(questions = paste0(1:9, &quot;. &quot;, unlist(questions)), choices_types)
+metahtml &lt;- mutate(metahtml, questions = str_replace(questions, &quot;\\*&quot;, &quot;&quot;) %&gt;% str_trim)
+metahtml</code></pre>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>We can first check if all columns in <code>metapdf</code> and <code>metahtml</code> are equals.</p>
+<pre class="r"><code>map2(metapdf, metahtml, all.equal)</code></pre>
+<p>With two different kind of files, I was able to get the same result thanks to two amazing packages : <code>pdftools</code> and <code>rvest</code>. Scraping the <code>HTML</code> page could have been made with <code>xml2</code> package as lots of <code>rvest</code> functions are wrappers around <code>xml2</code> functions. The main difference is that <code>xml2</code> functions only accept <a href="https://www.w3schools.com/xml/xpath_intro.asp">xpath</a> expressions which from my point of view has a non easy syntax to master (but maybe I’m lazy). However, you can get xpath expressions from GadgetSelector which helps their utilisation along.</p>
+<p>It was not the purpose of this work to tell if one way of extracting information is better than the other. I had fun with both and I was amazed by the power of both packages. There will be days when I’ll have to work with <code>PDF</code>, and I know that I can count on <code>pdftools</code> for that, as much as I am more than convinced by <code>rvest</code> to help me during my future webscraping.</p>
+<p>If I had one difference to point out is that rules to wrangle data from the <code>PDF</code> strongly depend on how the <code>PDF</code> file is structured. The large diversity of possible structure probably makes difficult to define a reproducible strategy while for <code>HTML</code> page strategy is always the same : find value of <code>CSS</code> selectors for the data you want with SelectorGadget and apply the appropriate function to extract it. In the end, it might not be faster but it sure makes the workflow more obvious.</p>
+<p>I hope you enjoyed reading this first post as much as I enjoyed writing it. Don’t be shy ! Leave a comment for anything and let me know if you would have handled things differently.</p>
+</div>
