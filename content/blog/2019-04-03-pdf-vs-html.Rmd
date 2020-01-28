@@ -1,5 +1,5 @@
 ---
-title: "PDF vs HTML : Extraire de l'information d'un formulaire Google"
+title: "PDF vs HTML : Extraire des données d'un formulaire Google avec R"
 author: "Benjamin Louis"
 date: '2019-04-03'
 tags: ["pdftools", "rvest", "Google From", "R"]
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   message = FALSE)
 ```
 
-Il y a quelques mois, j'ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les [10 commandements d’une base de données réussie](https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/), un sérieux travail de nettoyage était nécessaire. Il me fallait pour cela les titres des questions et les choix possibles des réponses mais ils n'étaient pas fournis par le client. Alors que je cherchais comment les récupérer, deux choix s'offrait à moi : soit via le fichier `PDF` téléchargeable, soit via la page `HTML` directement. J'ai décidé de tester les deux possibilités d'extraction de données.
+Il y a quelques mois, j'ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les [10 commandements d’une base de données réussie](https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/), un travail de nettoyage était nécessaire. J'ai eu besoin des intitulés des questions et les réponses possibles mais ils n'étaient pas fournis par le client. Deux choix s'offraient à moi pour les récupérer : soit via le fichier `PDF`, soit directement via la page `HTML`. Je teste ici les deux possibilités d'extraction de données.
 
 ## Quels outils pour quel résultat
 
