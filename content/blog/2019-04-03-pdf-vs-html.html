@@ -42,7 +42,7 @@ head(metapdf[[1]])
 ## 2     4     11     0   781 TRUE  1                                         
 ## 3    12     11     7   781 TRUE  sur                                       
 ## 4     4     11    22   781 FALSE 2                                         
-## 5   287     11   323     0 FALSE https://docs.google.com/forms/d/10UqbE6ed~
+## 5   287     11   323     0 FALSE https://docs.google.com/forms/d/10UqbE6ed…
 ## 6   100     19    77    80 FALSE Introduction</code></pre>
 <p>La fonction est vraiment parfaite pour ce travail car le format de l’objet qu’elle renvoie est très proche du format final désiré. Il suffit de construire un unique <code>data.frame</code> à partir de tous ceux présents dans la liste en prenant soin de garder un identifiant des pages du document.</p>
 <pre class="r"><code>library(pdftools)
@@ -73,19 +73,21 @@ select(metapdf, lines, sentences_group, sentences)
 ## # A tibble: 44 x 3
 ##    lines                     sentences_group sentences                     
 ##    &lt;chr&gt;                     &lt;chr&gt;           &lt;chr&gt;                         
-##  1 Event Timing: January 4t~ sent1           Event Timing: January 4th-6th~
-##  2 Event Address: 123 Your ~ sent2           Event Address: 123 Your Stree~
-##  3 Contact us at (123) 456-~ sent3           Contact us at (123) 456-7890 ~
+##  1 Event Timing: January 4t… sent1           Event Timing: January 4th-6th…
+##  2 Event Address: 123 Your … sent2           Event Address: 123 Your Stree…
+##  3 Contact us at (123) 456-… sent3           Contact us at (123) 456-7890 …
 ##  4 1. Name *                 sent4           1. Name *                     
 ##  5 2. Email *                sent5           2. Email *                    
 ##  6 3. Organization *         sent6           3. Organization *             
-##  7 4. What days will you at~ sent7           4. What days will you attend?~
+##  7 4. What days will you at… sent7           4. What days will you attend?…
 ##  8 Check all that apply.     sent8           Check all that apply.         
 ##  9 Day 1                     sent9           Day 1                         
 ## 10 Day 2                     sent10          Day 2                         
+
 ## # ... with 34 more rows</code></pre>
 <p><strong>Identifier les blocs de question</strong></p>
 <p>La méthode précédente aboutissant à la colonne <code>sentences_group</code> est également utilisée pour créer la colonne <code>question_bloc</code> qui identifie les lignes qui appartiennent à la même question i.e. l’intitulé et les réponses possibles. Les lignes ayant la valeur <code>bloc0</code> correspondent au texte d’introduction avant les questions et sont donc supprimées.</p>
+
 <pre class="r"><code>metapdf &lt;- metapdf %&gt;%
   mutate(question_bloc = paste0(&quot;bloc&quot;, cumsum(str_detect(lines, &quot;^\\d{1,2}\\.\\s&quot;)))) %&gt;%
   filter(question_bloc != &quot;bloc0&quot;)</code></pre>
@@ -126,15 +128,15 @@ metapdf
 ## # A tibble: 9 x 3
 ##   questions                                               types    choices 
 ##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;  
-## 1 1. Name                                                 free     &lt;chr [0~
-## 2 2. Email                                                free     &lt;chr [0~
-## 3 3. Organization                                         free     &lt;chr [0~
-## 4 4. What days will you attend?                           multiple &lt;chr [3~
-## 5 5. Dietary restrictions                                 unique   &lt;chr [6~
-## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1~
-## 7 7. What will you be bringing?                           multiple &lt;chr [5~
-## 8 8. How did you hear about this event?                   unique   &lt;chr [5~
-## 9 9. What times are you available?                        grid     &lt;chr [9~</code></pre>
+## 1 1. Name                                                 free     &lt;chr [0…
+## 2 2. Email                                                free     &lt;chr [0…
+## 3 3. Organization                                         free     &lt;chr [0…
+## 4 4. What days will you attend?                           multiple &lt;chr [3…
+## 5 5. Dietary restrictions                                 unique   &lt;chr [6…
+## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1…
+## 7 7. What will you be bringing?                           multiple &lt;chr [5…
+## 8 8. How did you hear about this event?                   unique   &lt;chr [5…
+## 9 9. What times are you available?                        grid     &lt;chr [9…</code></pre>
 </div>
 </div>
 <div id="rvest-a-lessai" class="section level2">
@@ -152,10 +154,12 @@ form
 ## [2] &lt;body dir=&quot;ltr&quot; class=&quot;freebirdLightBackground isConfigReady&quot; id=&quot;wi ...
 form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()
 ## [1] 23</code></pre>
+
 <p>Le premier noeud de notre page est appelé <code>html</code> et contient deux noeuds enfants appelés respectivement <code>head</code> et <code>body</code>. Si on jette un oeil aux noeuds enfants de <code>body</code>, on voit qu’il en existe 23. Ces noeuds peuvent également avoir des noeuds enfants et ainsi de suite.</p>
 <p>La structure d’un noeud ressemble à <code>&lt;name attr1 = "value1" attr2 = "value2"&gt; object &lt;/name&gt;</code> où <code>&lt;name&gt;...&lt;/name&gt;</code> est une balise (avec un nom spécifique) qui peut avoir plusieurs attributs (<code>attr1</code>, <code>attr2</code>) ayant des valeurs spécifiques (<code>"value1</code>, <code>"value2"</code>). Les balises délimitent des objets qui peuvent être d’autre noeuds ou du texte présent sur la page <code>HTML</code>.</p>
 <p>Les attributs des noeuds peuvent être des sélecteurs <code>CSS</code>. Ils sont utilisés pour lier les noeuds aux feuilles de style <code>CSS</code> qui définissent comment le contenu d’un noeud est affiché sur le navigateur web. Le nom de ces attributs est soit <code>id</code> ou <code>class</code>. Les sélecteurs <code>CSS</code> peuvent être utilisés comme des identifiants des noeuds lorsque l’on récupère du contenu web.</p>
 <p>Le principal défi est d’utiliser le bon sélecteur <code>CSS</code>. Pour cela, l’outil <a href="https://selectorgadget.com/">SelectorGadget</a> est très utile. Comme l’écrit <a href="http://hadley.nz/">Hadley Wickham</a> dans <a href="https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html">cette vignette du package rvest</a>, <em>“Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page.”</em> (SelectorGadget est un outil javascript qui permet de distinguer interactivement les sélecteurs CSS nécessaires pour l’extraction d’un contenu désiré dans une page). SelectorGadget est facile d’utilisation et la vignette l’explique suffisamment clairement pour que je ne le détaille pas ici.</p>
+
 </div>
 <div id="recuperer-les-donnees" class="section level3">
 <h3>Récupérer les données</h3>
@@ -183,10 +187,12 @@ questions
 ## [7] &quot;What will you be bringing?*&quot;                          
 ## [8] &quot;How did you hear about this event?*&quot;                  
 ## [9] &quot;What times are you available?*&quot;</code></pre>
+
 <p><strong>Réponses possibles et type de question</strong></p>
 <p>La prochaine étape consiste à isoler les réponses possibles et les types des questions en appliquant un fonction sur chaque bloc de question. Cette fonction contient des conditions de type <code>if..else...</code> qui dépendent du type de la question.</p>
 <p>Les deux types de question à choix multiple sont dans des noeuds avec la classe <code>freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList</code>. Les réponses possibles sont stockées dans les attributs <code>value</code> des noeuds ayant pour classe <code>exportInput</code> et l’attribut <code>aria-label</code> égal à <code>"option value"</code>. Certaines de ces questions permettent de répondre une option autre (<em>“Other”</em>) - cette option nécessite un traitement spécial car stockée dans un autre type de noeud. De plus, le choix des types de question entre <code>unique</code> et <code>multiple</code> dépend de la valeur de l’attribut <code>data-list-type</code> des noeuds ayant comme classe <code>freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList</code>.</p>
 <p>Les questions de type <code>Grid</code> sont dans des blocs de question qui contiennent un noeud avec la classe <code>freebirdFormeditorViewQuestionBodyGridbodyRow</code>. Le texte des noeuds ayant uniquement cette classe correspond aux noms des lignes de la grille. Le nom des colonnes est stocké comme texte dans un noeud avec la classe <code>freebirdFormeditorViewQuestionBodyGridbodyCell</code> présent dans des noeuds avec la classe <code>freebirdFormeditorViewQuestionBodyGridbodyColumnHeader</code>.</p>
+
 <pre class="r"><code># To make code smaller
 get_xpath &lt;- function(.y) {
   cl &lt;- str_replace(prefix(.y), &quot;\\.&quot;, &quot;&quot;)
@@ -239,15 +245,15 @@ metahtml
 ## # A tibble: 9 x 3
 ##   questions                                               types    choices 
 ##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;  
-## 1 1. Name                                                 free     &lt;chr [0~
-## 2 2. Email                                                free     &lt;chr [0~
-## 3 3. Organization                                         free     &lt;chr [0~
-## 4 4. What days will you attend?                           multiple &lt;chr [3~
-## 5 5. Dietary restrictions                                 unique   &lt;chr [6~
-## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1~
-## 7 7. What will you be bringing?                           multiple &lt;chr [5~
-## 8 8. How did you hear about this event?                   unique   &lt;chr [5~
-## 9 9. What times are you available?                        grid     &lt;chr [9~</code></pre>
+## 1 1. Name                                                 free     &lt;chr [0…
+## 2 2. Email                                                free     &lt;chr [0…
+## 3 3. Organization                                         free     &lt;chr [0…
+## 4 4. What days will you attend?                           multiple &lt;chr [3…
+## 5 5. Dietary restrictions                                 unique   &lt;chr [6…
+## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1…
+## 7 7. What will you be bringing?                           multiple &lt;chr [5…
+## 8 8. How did you hear about this event?                   unique   &lt;chr [5…
+## 9 9. What times are you available?                        grid     &lt;chr [9…</code></pre>
 </div>
 </div>
 <div id="conclusion" class="section level1">
