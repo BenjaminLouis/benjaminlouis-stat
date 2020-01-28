@@ -44,7 +44,13 @@ Pour travailler avec le fichier `PDF`, j'utilise le [package rOpenSci `pdftools`
 
 La fonction `pdf_data` du package `pdftools` est particulièrement utile pour importer des donnnées depuis un `PDF`. Cette fonction renvoie une liste de `data.frame`, un par page du document, contenant une ligne par _"boîte"_ contenant du texte (i.e. texte entre deux zones sans texte tel que des espaces) et les colonnes correspondant à la taille, aux coordonnées et à la valeur de ces _"boîtes"_.
 
-```{r pdfimport}
+```{r pdfimportblind, echo = FALSE}
+library(pdftools)
+metapdf <- pdf_data(here::here("static/blog/2019-04-03-pdf-vs-html_files/test_form.pdf"))
+head(metapdf[[1]])
+```
+
+```{r pdfimport, eval = FALSE}
 library(pdftools)
 metapdf <- pdf_data("2019-04-03-pdf-vs-html_files/test_form.pdf")
 head(metapdf[[1]])
@@ -157,7 +163,14 @@ Si vous n'avez jamais entendu parler de `HTML` et `CSS`, il est possible que ce 
 
 De manière très brève, une page `HTML` a une structure en arbre (appelé un DOM pour _Document Object Model_) où chaque noeud contient des objets. La fonction `read_html` permet de lire et importer le DOM dans R.
 
-```{r htmlimport}
+```{r htmlimportblind, echo = FALSE}
+library(rvest)
+form <- read_html(here::here("static/blog/2019-04-03-pdf-vs-html_files/test_form.html"))
+form
+form %>% html_nodes("body") %>% html_children() %>% length()
+```
+
+```{r htmlimport, eval = FALSE}
 library(rvest)
 form <- read_html("2019-04-03-pdf-vs-html_files/test_form.html")
 form

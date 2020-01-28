@@ -18,7 +18,7 @@
 
                 <!--  old code : $posts := .Paginate (where .Data.Pages "Type" "blog")  -->
                 <!--  replaced by : $posts := .Paginate (where (where .Data.Pages "Type" "blog") ".Params.level" "1") -->
-               {{ $posts := .Paginate (where .Data.Pages "Type" "blog") }}
+               {{ $posts := .Paginate (where .Site.Pages "Type" "blog") }}
                 {{ range first 3 $posts.Pages }}
                 <p>Titre : {{ .Params.title }}</p>
                 <div class="col-md-4 col-sm-6">

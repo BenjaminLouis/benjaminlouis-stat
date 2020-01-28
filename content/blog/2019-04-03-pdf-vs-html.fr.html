@@ -30,10 +30,7 @@ library(stringr)</code></pre>
 <div id="importer-les-donnees-dun-pdf" class="section level3">
 <h3>Importer les données d’un <code>PDF</code></h3>
 <p>La fonction <code>pdf_data</code> du package <code>pdftools</code> est particulièrement utile pour importer des donnnées depuis un <code>PDF</code>. Cette fonction renvoie une liste de <code>data.frame</code>, un par page du document, contenant une ligne par <em>“boîte”</em> contenant du texte (i.e. texte entre deux zones sans texte tel que des espaces) et les colonnes correspondant à la taille, aux coordonnées et à la valeur de ces <em>“boîtes”</em>.</p>
-<pre class="r"><code>library(pdftools)
-metapdf &lt;- pdf_data(&quot;2019-04-03-pdf-vs-html_files/test_form.pdf&quot;)
-head(metapdf[[1]])
-## # A tibble: 6 x 6
+<pre><code>## # A tibble: 6 x 6
 ##   width height     x     y space text                                      
 ##   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;                                     
 ## 1    49     11     0     0 FALSE Introduction                              
@@ -42,6 +39,9 @@ head(metapdf[[1]])
 ## 4     4     11    22   781 FALSE 2                                         
 ## 5   287     11   323     0 FALSE https://docs.google.com/forms/d/10UqbE6ed~
 ## 6   100     19    77    80 FALSE Introduction</code></pre>
+<pre class="r"><code>library(pdftools)
+metapdf &lt;- pdf_data(&quot;2019-04-03-pdf-vs-html_files/test_form.pdf&quot;)
+head(metapdf[[1]])</code></pre>
 <p>La fonction est vraiment parfaite pour ce travail car le format de l’objet qu’elle renvoie est très proche du format final désiré. Il suffit de construire un unique <code>data.frame</code> à partir de tous ceux présents dans la liste en prenant soin de garder un identifiant des pages du document.</p>
 <pre class="r"><code>library(pdftools)
 metapdf &lt;- bind_rows(metapdf, .id = &quot;page&quot;)</code></pre>
@@ -141,15 +141,15 @@ metapdf
 <div id="rvest-selectorgadget-et-les-selecteurs-css" class="section level3">
 <h3>rvest, selectorGadget et les sélecteurs CSS</h3>
 <p>De manière très brève, une page <code>HTML</code> a une structure en arbre (appelé un DOM pour <em>Document Object Model</em>) où chaque noeud contient des objets. La fonction <code>read_html</code> permet de lire et importer le DOM dans R.</p>
-<pre class="r"><code>library(rvest)
-form &lt;- read_html(&quot;2019-04-03-pdf-vs-html_files/test_form.html&quot;)
-form
-## {xml_document}
+<pre><code>## {xml_document}
 ## &lt;html lang=&quot;en&quot; class=&quot;freebird&quot;&gt;
 ## [1] &lt;head&gt;\n&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset= ...
 ## [2] &lt;body dir=&quot;ltr&quot; class=&quot;freebirdLightBackground isConfigReady&quot; id=&quot;wi ...
-form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()
 ## [1] 23</code></pre>
+<pre class="r"><code>library(rvest)
+form &lt;- read_html(&quot;2019-04-03-pdf-vs-html_files/test_form.html&quot;)
+form
+form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()</code></pre>
 <p>Le premier noeud de notre page est appelé <code>html</code> et contient deux noeuds enfants appelés respectivement <code>head</code> et <code>body</code>. Si on jette un oeil aux noeuds enfants de <code>body</code>, on voit qu’il en existe 23. Ces noeuds peuvent également avoir des noeuds enfants et ainsi de suite.</p>
 <p>La structure d’un noeud ressemble à <code>&lt;name attr1 = "value1" attr2 = "value2"&gt; object &lt;/name&gt;</code> où <code>&lt;name&gt;...&lt;/name&gt;</code> est une balise (avec un nom spécifique) qui peut avoir plusieurs attributs (<code>attr1</code>, <code>attr2</code>) ayant des valeurs spécifiques (<code>"value1</code>, <code>"value2"</code>). Les balises délimitent des objets qui peuvent être d’autre noeuds ou du texte présent sur la page <code>HTML</code>.</p>
 <p>Les attributs des noeuds peuvent être des sélecteurs <code>CSS</code>. Ils sont utilisés pour lier les noeuds aux feuilles de style <code>CSS</code> qui définissent comment le contenu d’un noeud est affiché sur le navigateur web. Le nom de ces attributs est soit <code>id</code> ou <code>class</code>. Les sélecteurs <code>CSS</code> peuvent être utilisés comme des identifiants des noeuds lorsque l’on récupère du contenu web.</p>
