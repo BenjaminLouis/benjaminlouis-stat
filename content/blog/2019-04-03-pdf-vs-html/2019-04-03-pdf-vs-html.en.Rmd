@@ -12,8 +12,7 @@ type: "blog"
 knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,
-  message = FALSE,
-  eval = FALSE)
+  message = FALSE)
 ```
 
 A couple months ago, I had to analyse responses from a questionnaire. I needed to tidy the dataset downloaded from Google Forms as it did not respect the [10 commandments for a well-formated database](https://rtask.thinkr.fr/blog/the-ten-commandments-for-a-well-formatted-database/). I wanted to import questions titles and answer choices into R but these metadata were not provided by the client. When I decided to get them, two choices were possible : either from the downloaded `PDF` file or from the `HTML` page of the form. And I said to myself, why not trying both ?
@@ -46,7 +45,13 @@ To work with the `PDF`, I used the [rOpenSci’s Jeroen Ooms’ `pdftools` packa
 
 Package `pdftools` has a powerful function, called `pdf_data`, to import data from a `PDF`. This function returns a list of `data.frame`, one per pages in the file, with one row for each text box and columns corresponding to sizes, coordinates and values of these text boxes.
 
-```{r pdfimport}
+```{r pdfimportblind, echo = FALSE}
+library(pdftools)
+metapdf <- pdf_data(here::here("static/blog/2019-04-03-pdf-vs-html_files/test_form.pdf"))
+head(metapdf[[1]])
+```
+
+```{r pdfimport, eval = FALSE}
 library(pdftools)
 metapdf <- pdf_data("2019-04-03-pdf-vs-html_files/test_form.pdf")
 head(metapdf[[1]])
@@ -159,7 +164,14 @@ If you have never heard about `HTML` and `CSS`, maybe what comes after will be a
 
 Basically, a `HTML` page has a tree structure (called a DOM for _Document Object Model_) where each node contains objects. Function `read_html` makes possible to read and import this DOM into R.
 
-```{r htmlimport}
+```{r htmlimportblind, echo = FALSE}
+library(rvest)
+form <- read_html(here::here("static/blog/2019-04-03-pdf-vs-html_files/test_form.html"))
+form
+form %>% html_nodes("body") %>% html_children() %>% length()
+```
+
+```{r htmlimport, eval = FALSE}
 library(rvest)
 form <- read_html("2019-04-03-pdf-vs-html_files/test_form.html")
 form

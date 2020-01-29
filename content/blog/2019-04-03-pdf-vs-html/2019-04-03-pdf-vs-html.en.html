@@ -31,6 +31,15 @@ library(stringr)</code></pre>
 <div id="importing-data-from-a-pdf" class="section level3">
 <h3>Importing data from a <code>PDF</code></h3>
 <p>Package <code>pdftools</code> has a powerful function, called <code>pdf_data</code>, to import data from a <code>PDF</code>. This function returns a list of <code>data.frame</code>, one per pages in the file, with one row for each text box and columns corresponding to sizes, coordinates and values of these text boxes.</p>
+<pre><code>## # A tibble: 6 x 6
+##   width height     x     y space text                                           
+##   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;                                          
+## 1    49     11     0     0 FALSE Introduction                                   
+## 2     4     11     0   781 TRUE  1                                              
+## 3    12     11     7   781 TRUE  sur                                            
+## 4     4     11    22   781 FALSE 2                                              
+## 5   287     11   323     0 FALSE https://docs.google.com/forms/d/10UqbE6edL7K6G~
+## 6   100     19    77    80 FALSE Introduction</code></pre>
 <pre class="r"><code>library(pdftools)
 metapdf &lt;- pdf_data(&quot;2019-04-03-pdf-vs-html_files/test_form.pdf&quot;)
 head(metapdf[[1]])</code></pre>
@@ -59,7 +68,21 @@ metapdf &lt;- bind_rows(metapdf, .id = &quot;page&quot;)</code></pre>
   mutate(sentences = str_c(lines, collapse = &quot; &quot;)) %&gt;%
   distinct(sentences_group, .keep_all = TRUE) %&gt;%
   ungroup()
-select(metapdf, lines, sentences_group, sentences)</code></pre>
+select(metapdf, lines, sentences_group, sentences)
+## # A tibble: 44 x 3
+##    lines                       sentences_group sentences                        
+##    &lt;chr&gt;                       &lt;chr&gt;           &lt;chr&gt;                            
+##  1 Event Timing: January 4th-~ sent1           Event Timing: January 4th-6th, 2~
+##  2 Event Address: 123 Your St~ sent2           Event Address: 123 Your Street Y~
+##  3 Contact us at (123) 456-78~ sent3           Contact us at (123) 456-7890 or ~
+##  4 1. Name *                   sent4           1. Name *                        
+##  5 2. Email *                  sent5           2. Email *                       
+##  6 3. Organization *           sent6           3. Organization *                
+##  7 4. What days will you atte~ sent7           4. What days will you attend? *  
+##  8 Check all that apply.       sent8           Check all that apply.            
+##  9 Day 1                       sent9           Day 1                            
+## 10 Day 2                       sent10          Day 2                            
+## # ... with 34 more rows</code></pre>
 <p><strong>Distinguishing question blocs</strong></p>
 <p>The method used to create column <code>sentences_group</code> was used to create column <code>question_bloc</code> which identifies the lines that belong to the same question i.e. the question titles and the answer choices. Value <code>bloc0</code> corresponded to text before the first question so I removed it.</p>
 <pre class="r"><code>metapdf &lt;- metapdf %&gt;%
@@ -98,7 +121,19 @@ metapdf$choices[metapdf$types == &quot;grid&quot;] &lt;- list(c(row = rows, colu
 <p><strong>Cleaning</strong></p>
 <p>The last step was to do some cleaning. I removed the <code>*</code> that was present at the end of question titles where an answer was required.</p>
 <pre class="r"><code>metapdf &lt;- metapdf %&gt;% mutate(questions = str_replace(questions, &quot;\\*&quot;, &quot;&quot;) %&gt;% str_trim)
-metapdf</code></pre>
+metapdf
+## # A tibble: 9 x 3
+##   questions                                               types    choices  
+##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;   
+## 1 1. Name                                                 free     &lt;chr [0]&gt;
+## 2 2. Email                                                free     &lt;chr [0]&gt;
+## 3 3. Organization                                         free     &lt;chr [0]&gt;
+## 4 4. What days will you attend?                           multiple &lt;chr [3]&gt;
+## 5 5. Dietary restrictions                                 unique   &lt;chr [6]&gt;
+## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1]&gt;
+## 7 7. What will you be bringing?                           multiple &lt;chr [5]&gt;
+## 8 8. How did you hear about this event?                   unique   &lt;chr [5]&gt;
+## 9 9. What times are you available?                        grid     &lt;chr [9]&gt;</code></pre>
 </div>
 </div>
 <div id="a-try-with-rvest" class="section level2">
@@ -107,6 +142,11 @@ metapdf</code></pre>
 <div id="rvest-selectorgadget-and-css-selector" class="section level3">
 <h3>rvest, selectorGadget and CSS selector</h3>
 <p>Basically, a <code>HTML</code> page has a tree structure (called a DOM for <em>Document Object Model</em>) where each node contains objects. Function <code>read_html</code> makes possible to read and import this DOM into R.</p>
+<pre><code>## {xml_document}
+## &lt;html lang=&quot;en&quot; class=&quot;freebird&quot;&gt;
+## [1] &lt;head&gt;\n&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8 ...
+## [2] &lt;body dir=&quot;ltr&quot; class=&quot;freebirdLightBackground isConfigReady&quot; id=&quot;wizView ...
+## [1] 23</code></pre>
 <pre class="r"><code>library(rvest)
 form &lt;- read_html(&quot;2019-04-03-pdf-vs-html_files/test_form.html&quot;)
 form
@@ -132,7 +172,16 @@ question_blocs &lt;- form %&gt;%
 <pre class="r"><code>questions &lt;- question_blocs %&gt;%
   html_nodes(prefix(&quot;ItemMinimizedTitleRow&quot;)) %&gt;%
   html_text() 
-questions</code></pre>
+questions
+## [1] &quot;Name*&quot;                                                
+## [2] &quot;Email*&quot;                                               
+## [3] &quot;Organization*&quot;                                        
+## [4] &quot;What days will you attend?*&quot;                          
+## [5] &quot;Dietary restrictions*&quot;                                
+## [6] &quot;I understand that I will have to pay $$ upon arrival*&quot;
+## [7] &quot;What will you be bringing?*&quot;                          
+## [8] &quot;How did you hear about this event?*&quot;                  
+## [9] &quot;What times are you available?*&quot;</code></pre>
 <p><strong>Answer choices and question types</strong></p>
 <p>The next step was to get answer choices and question types by applying a function on each question bloc. This function contained <code>if..else...</code> statements depending on the type of questions.</p>
 <p>Both kind of multiple choices questions were in nodes with class <code>freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList</code> class. Answer choices were stored in attributes <code>value</code> in nodes with class <code>exportInput</code> and attribute <code>aria-label</code> equal to <code>"option value"</code>. Some of these questions allowed an <em>“Other”</em> option as answer choice - this option required a special treatment as it was stored in different kind of nodes. Besides, question types between <code>unique</code> and <code>multiple</code> depended on <code>data-list-type</code> attribute value from the node with class <code>freebirdFormeditorViewQuestionBodyChoicelistbodyOmniList</code>.</p>
@@ -185,13 +234,33 @@ choices_types &lt;- map_dfr(question_blocs, get_choices_and_types)</code></pre>
 <p>Finally, the last step was to bind data of interest and apply the same cleaning as with the <code>PDF</code>.</p>
 <pre class="r"><code>metahtml &lt;- bind_cols(questions = paste0(1:9, &quot;. &quot;, unlist(questions)), choices_types)
 metahtml &lt;- mutate(metahtml, questions = str_replace(questions, &quot;\\*&quot;, &quot;&quot;) %&gt;% str_trim)
-metahtml</code></pre>
+metahtml
+## # A tibble: 9 x 3
+##   questions                                               types    choices  
+##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;   
+## 1 1. Name                                                 free     &lt;chr [0]&gt;
+## 2 2. Email                                                free     &lt;chr [0]&gt;
+## 3 3. Organization                                         free     &lt;chr [0]&gt;
+## 4 4. What days will you attend?                           multiple &lt;chr [3]&gt;
+## 5 5. Dietary restrictions                                 unique   &lt;chr [6]&gt;
+## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1]&gt;
+## 7 7. What will you be bringing?                           multiple &lt;chr [5]&gt;
+## 8 8. How did you hear about this event?                   unique   &lt;chr [5]&gt;
+## 9 9. What times are you available?                        grid     &lt;chr [9]&gt;</code></pre>
 </div>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
 <p>We can first check if all columns in <code>metapdf</code> and <code>metahtml</code> are equals.</p>
-<pre class="r"><code>map2(metapdf, metahtml, all.equal)</code></pre>
+<pre class="r"><code>map2(metapdf, metahtml, all.equal)
+## $questions
+## [1] TRUE
+## 
+## $types
+## [1] TRUE
+## 
+## $choices
+## [1] TRUE</code></pre>
 <p>With two different kind of files, I was able to get the same result thanks to two amazing packages : <code>pdftools</code> and <code>rvest</code>. Scraping the <code>HTML</code> page could have been made with <code>xml2</code> package as lots of <code>rvest</code> functions are wrappers around <code>xml2</code> functions. The main difference is that <code>xml2</code> functions only accept <a href="https://www.w3schools.com/xml/xpath_intro.asp">xpath</a> expressions which from my point of view has a non easy syntax to master (but maybe I’m lazy). However, you can get xpath expressions from GadgetSelector which helps their utilisation along.</p>
 <p>It was not the purpose of this work to tell if one way of extracting information is better than the other. I had fun with both and I was amazed by the power of both packages. There will be days when I’ll have to work with <code>PDF</code>, and I know that I can count on <code>pdftools</code> for that, as much as I am more than convinced by <code>rvest</code> to help me during my future webscraping.</p>
 <p>If I had one difference to point out is that rules to wrangle data from the <code>PDF</code> strongly depend on how the <code>PDF</code> file is structured. The large diversity of possible structure probably makes difficult to define a reproducible strategy while for <code>HTML</code> page strategy is always the same : find value of <code>CSS</code> selectors for the data you want with SelectorGadget and apply the appropriate function to extract it. In the end, it might not be faster but it sure makes the workflow more obvious.</p>

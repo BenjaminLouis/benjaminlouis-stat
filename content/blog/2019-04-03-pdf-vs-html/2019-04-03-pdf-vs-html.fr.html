@@ -11,7 +11,7 @@ type: "blog"
 
 
 <p>Il y a quelques mois, j’ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les <a href="https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/">10 commandements d’une base de données réussie</a>, un travail de nettoyage était nécessaire. J’ai eu besoin des intitulés des questions et les réponses possibles mais ils n’étaient pas fournis par le client. Deux choix s’offraient à moi pour les récupérer : soit via le fichier <code>PDF</code>, soit directement via la page <code>HTML</code>. Je teste ici les deux possibilités d’extraction de données.</p>
-<div id="quels-outils-pour-quel-resultat" class="section level2">
+<div id="quels-outils-pour-quel-résultat" class="section level2">
 <h2>Quels outils pour quel résultat</h2>
 <p>En plus de packages spécifiques présentés plus tard, ce travail est avant tout un travail de manipulation de données et évidemment les packages du <a href="https://www.tidyverse.org/">tidyverse</a> vont nous être utiles : <a href="https://dplyr.tidyverse.org/">dplyr</a> pour la manipulation de données en général, <a href="https://purrr.tidyverse.org/">purrr</a> pour la programmation fonctionnelle et <a href="https://stringr.tidyverse.org/">stringr</a> pour la manipulation de chaîne de caractères.</p>
 <pre class="r"><code>library(dplyr)
@@ -25,24 +25,24 @@ library(stringr)</code></pre>
 <li><p><code>choices</code> : une <a href="https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html">liste-colonne</a> dont chaque ligne est un vecteur des choix possibles de réponse pour les questions <code>unique</code> et <code>multiple</code>, un vecteur dont les éléments sont nommés pour les questions <code>grid</code> (les noms correspondant à ligne1, ligne2, …, colonne1, … de la grille) et un vecteur de longueur 0 pour les questions <code>free</code>.</p></li>
 </ul>
 </div>
-<div id="pdftools-a-lessai" class="section level2">
+<div id="pdftools-à-lessai" class="section level2">
 <h2><code>pdftools</code> à l’essai</h2>
 <p>Pour travailler avec le fichier <code>PDF</code>, j’utilise le <a href="https://github.com/ropensci/pdftools">package rOpenSci <code>pdftools</code> développé par Jeroen Ooms’</a>. Si vous ne connaissez pas ce package, je vous encourage vivement à y jeter un oeil ainsi qu’à <a href="https://masalmon.eu/2019/02/11/trump-schedule/">l’article de Maëlle Salmon sur l’emploi du temps de Trump</a>. Pour les utilisateurs d’Ubuntu, l’installation de <code>pdftools</code> peut s’avérer délicate car la dernière version de Poppler n’est pas disponible sur Linux. J’ai réussi grâce à <a href="https://askubuntu.com/questions/1112856/how-to-install-poppler-0-73-on-ubuntu-18-04/1112947#1112947">cette discussion</a> (testé avec Ubuntu 18.04).</p>
-<div id="importer-les-donnees-dun-pdf" class="section level3">
+<div id="importer-les-données-dun-pdf" class="section level3">
 <h3>Importer les données d’un <code>PDF</code></h3>
 <p>La fonction <code>pdf_data</code> du package <code>pdftools</code> est particulièrement utile pour importer des donnnées depuis un <code>PDF</code>. Cette fonction renvoie une liste de <code>data.frame</code>, un par page du document, contenant une ligne par <em>“boîte”</em> contenant du texte (i.e. texte entre deux zones sans texte tel que des espaces) et les colonnes correspondant à la taille, aux coordonnées et à la valeur de ces <em>“boîtes”</em>.</p>
-<pre><code>## # A tibble: 6 x 6
-##   width height     x     y space text                                      
-##   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;                                     
-## 1    49     11     0     0 FALSE Introduction                              
-## 2     4     11     0   781 TRUE  1                                         
-## 3    12     11     7   781 TRUE  sur                                       
-## 4     4     11    22   781 FALSE 2                                         
-## 5   287     11   323     0 FALSE https://docs.google.com/forms/d/10UqbE6ed~
-## 6   100     19    77    80 FALSE Introduction</code></pre>
 <pre class="r"><code>library(pdftools)
 metapdf &lt;- pdf_data(&quot;2019-04-03-pdf-vs-html_files/test_form.pdf&quot;)
 head(metapdf[[1]])</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   width height     x     y space text                                           
+##   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;                                          
+## 1    49     11     0     0 FALSE Introduction                                   
+## 2     4     11     0   781 TRUE  1                                              
+## 3    12     11     7   781 TRUE  sur                                            
+## 4     4     11    22   781 FALSE 2                                              
+## 5   287     11   323     0 FALSE https://docs.google.com/forms/d/10UqbE6edL7K6G~
+## 6   100     19    77    80 FALSE Introduction</code></pre>
 <p>La fonction est vraiment parfaite pour ce travail car le format de l’objet qu’elle renvoie est très proche du format final désiré. Il suffit de construire un unique <code>data.frame</code> à partir de tous ceux présents dans la liste en prenant soin de garder un identifiant des pages du document.</p>
 <pre class="r"><code>library(pdftools)
 metapdf &lt;- bind_rows(metapdf, .id = &quot;page&quot;)</code></pre>
@@ -70,18 +70,18 @@ metapdf &lt;- bind_rows(metapdf, .id = &quot;page&quot;)</code></pre>
   ungroup()
 select(metapdf, lines, sentences_group, sentences)
 ## # A tibble: 44 x 3
-##    lines                     sentences_group sentences                     
-##    &lt;chr&gt;                     &lt;chr&gt;           &lt;chr&gt;                         
-##  1 Event Timing: January 4t~ sent1           Event Timing: January 4th-6th~
-##  2 Event Address: 123 Your ~ sent2           Event Address: 123 Your Stree~
-##  3 Contact us at (123) 456-~ sent3           Contact us at (123) 456-7890 ~
-##  4 1. Name *                 sent4           1. Name *                     
-##  5 2. Email *                sent5           2. Email *                    
-##  6 3. Organization *         sent6           3. Organization *             
-##  7 4. What days will you at~ sent7           4. What days will you attend?~
-##  8 Check all that apply.     sent8           Check all that apply.         
-##  9 Day 1                     sent9           Day 1                         
-## 10 Day 2                     sent10          Day 2                         
+##    lines                       sentences_group sentences                        
+##    &lt;chr&gt;                       &lt;chr&gt;           &lt;chr&gt;                            
+##  1 Event Timing: January 4th-~ sent1           Event Timing: January 4th-6th, 2~
+##  2 Event Address: 123 Your St~ sent2           Event Address: 123 Your Street Y~
+##  3 Contact us at (123) 456-78~ sent3           Contact us at (123) 456-7890 or ~
+##  4 1. Name *                   sent4           1. Name *                        
+##  5 2. Email *                  sent5           2. Email *                       
+##  6 3. Organization *           sent6           3. Organization *                
+##  7 4. What days will you atte~ sent7           4. What days will you attend? *  
+##  8 Check all that apply.       sent8           Check all that apply.            
+##  9 Day 1                       sent9           Day 1                            
+## 10 Day 2                       sent10          Day 2                            
 ## # ... with 34 more rows</code></pre>
 <p><strong>Identifier les blocs de question</strong></p>
 <p>La méthode précédente aboutissant à la colonne <code>sentences_group</code> est également utilisée pour créer la colonne <code>question_bloc</code> qui identifie les lignes qui appartiennent à la même question i.e. l’intitulé et les réponses possibles. Les lignes ayant la valeur <code>bloc0</code> correspondent au texte d’introduction avant les questions et sont donc supprimées.</p>
@@ -123,40 +123,40 @@ metapdf$choices[metapdf$types == &quot;grid&quot;] &lt;- list(c(row = rows, colu
 <pre class="r"><code>metapdf &lt;- metapdf %&gt;% mutate(questions = str_replace(questions, &quot;\\*&quot;, &quot;&quot;) %&gt;% str_trim)
 metapdf
 ## # A tibble: 9 x 3
-##   questions                                               types    choices 
-##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;  
-## 1 1. Name                                                 free     &lt;chr [0~
-## 2 2. Email                                                free     &lt;chr [0~
-## 3 3. Organization                                         free     &lt;chr [0~
-## 4 4. What days will you attend?                           multiple &lt;chr [3~
-## 5 5. Dietary restrictions                                 unique   &lt;chr [6~
-## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1~
-## 7 7. What will you be bringing?                           multiple &lt;chr [5~
-## 8 8. How did you hear about this event?                   unique   &lt;chr [5~
-## 9 9. What times are you available?                        grid     &lt;chr [9~</code></pre>
+##   questions                                               types    choices  
+##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;   
+## 1 1. Name                                                 free     &lt;chr [0]&gt;
+## 2 2. Email                                                free     &lt;chr [0]&gt;
+## 3 3. Organization                                         free     &lt;chr [0]&gt;
+## 4 4. What days will you attend?                           multiple &lt;chr [3]&gt;
+## 5 5. Dietary restrictions                                 unique   &lt;chr [6]&gt;
+## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1]&gt;
+## 7 7. What will you be bringing?                           multiple &lt;chr [5]&gt;
+## 8 8. How did you hear about this event?                   unique   &lt;chr [5]&gt;
+## 9 9. What times are you available?                        grid     &lt;chr [9]&gt;</code></pre>
 </div>
 </div>
-<div id="rvest-a-lessai" class="section level2">
+<div id="rvest-à-lessai" class="section level2">
 <h2><code>rvest</code> à l’essai</h2>
 <p>Si vous n’avez jamais entendu parler de <code>HTML</code> et <code>CSS</code>, il est possible que ce qui va suivre sera un peu obscure. Le contenu d’une page web est stocké en <code>HTML</code> et il est possible de récupérer ce contenu à l’aide de package tel que <a href="https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/">rvest</a> (c’est ce qu’on appelle du webscrapping).</p>
-<div id="rvest-selectorgadget-et-les-selecteurs-css" class="section level3">
+<div id="rvest-selectorgadget-et-les-sélecteurs-css" class="section level3">
 <h3>rvest, selectorGadget et les sélecteurs CSS</h3>
 <p>De manière très brève, une page <code>HTML</code> a une structure en arbre (appelé un DOM pour <em>Document Object Model</em>) où chaque noeud contient des objets. La fonction <code>read_html</code> permet de lire et importer le DOM dans R.</p>
-<pre><code>## {xml_document}
-## &lt;html lang=&quot;en&quot; class=&quot;freebird&quot;&gt;
-## [1] &lt;head&gt;\n&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset= ...
-## [2] &lt;body dir=&quot;ltr&quot; class=&quot;freebirdLightBackground isConfigReady&quot; id=&quot;wi ...
-## [1] 23</code></pre>
 <pre class="r"><code>library(rvest)
 form &lt;- read_html(&quot;2019-04-03-pdf-vs-html_files/test_form.html&quot;)
 form
 form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()</code></pre>
+<pre><code>## {xml_document}
+## &lt;html lang=&quot;en&quot; class=&quot;freebird&quot;&gt;
+## [1] &lt;head&gt;\n&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8 ...
+## [2] &lt;body dir=&quot;ltr&quot; class=&quot;freebirdLightBackground isConfigReady&quot; id=&quot;wizView ...
+## [1] 23</code></pre>
 <p>Le premier noeud de notre page est appelé <code>html</code> et contient deux noeuds enfants appelés respectivement <code>head</code> et <code>body</code>. Si on jette un oeil aux noeuds enfants de <code>body</code>, on voit qu’il en existe 23. Ces noeuds peuvent également avoir des noeuds enfants et ainsi de suite.</p>
 <p>La structure d’un noeud ressemble à <code>&lt;name attr1 = "value1" attr2 = "value2"&gt; object &lt;/name&gt;</code> où <code>&lt;name&gt;...&lt;/name&gt;</code> est une balise (avec un nom spécifique) qui peut avoir plusieurs attributs (<code>attr1</code>, <code>attr2</code>) ayant des valeurs spécifiques (<code>"value1</code>, <code>"value2"</code>). Les balises délimitent des objets qui peuvent être d’autre noeuds ou du texte présent sur la page <code>HTML</code>.</p>
 <p>Les attributs des noeuds peuvent être des sélecteurs <code>CSS</code>. Ils sont utilisés pour lier les noeuds aux feuilles de style <code>CSS</code> qui définissent comment le contenu d’un noeud est affiché sur le navigateur web. Le nom de ces attributs est soit <code>id</code> ou <code>class</code>. Les sélecteurs <code>CSS</code> peuvent être utilisés comme des identifiants des noeuds lorsque l’on récupère du contenu web.</p>
 <p>Le principal défi est d’utiliser le bon sélecteur <code>CSS</code>. Pour cela, l’outil <a href="https://selectorgadget.com/">SelectorGadget</a> est très utile. Comme l’écrit <a href="http://hadley.nz/">Hadley Wickham</a> dans <a href="https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html">cette vignette du package rvest</a>, <em>“Selectorgadget is a javascript bookmarklet that allows you to interactively figure out what css selector you need to extract desired components from a page.”</em> (SelectorGadget est un outil javascript qui permet de distinguer interactivement les sélecteurs CSS nécessaires pour l’extraction d’un contenu désiré dans une page). SelectorGadget est facile d’utilisation et la vignette l’explique suffisamment clairement pour que je ne le détaille pas ici.</p>
 </div>
-<div id="recuperer-les-donnees" class="section level3">
+<div id="récupérer-les-données" class="section level3">
 <h3>Récupérer les données</h3>
 <p><strong>blocs de question</strong></p>
 <p><a href="/blog/2019-04-03-pdf-vs-html_files/sg.png"><img src="/blog/2019-04-03-pdf-vs-html_files/sg.png" alt="selectorgadget" style="width:30.0%" /></a></p>
@@ -236,17 +236,17 @@ choices_types &lt;- map_dfr(question_blocs, get_choices_and_types)</code></pre>
 metahtml &lt;- mutate(metahtml, questions = str_replace(questions, &quot;\\*&quot;, &quot;&quot;) %&gt;% str_trim)
 metahtml
 ## # A tibble: 9 x 3
-##   questions                                               types    choices 
-##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;  
-## 1 1. Name                                                 free     &lt;chr [0~
-## 2 2. Email                                                free     &lt;chr [0~
-## 3 3. Organization                                         free     &lt;chr [0~
-## 4 4. What days will you attend?                           multiple &lt;chr [3~
-## 5 5. Dietary restrictions                                 unique   &lt;chr [6~
-## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1~
-## 7 7. What will you be bringing?                           multiple &lt;chr [5~
-## 8 8. How did you hear about this event?                   unique   &lt;chr [5~
-## 9 9. What times are you available?                        grid     &lt;chr [9~</code></pre>
+##   questions                                               types    choices  
+##   &lt;chr&gt;                                                   &lt;chr&gt;    &lt;list&gt;   
+## 1 1. Name                                                 free     &lt;chr [0]&gt;
+## 2 2. Email                                                free     &lt;chr [0]&gt;
+## 3 3. Organization                                         free     &lt;chr [0]&gt;
+## 4 4. What days will you attend?                           multiple &lt;chr [3]&gt;
+## 5 5. Dietary restrictions                                 unique   &lt;chr [6]&gt;
+## 6 6. I understand that I will have to pay $$ upon arrival multiple &lt;chr [1]&gt;
+## 7 7. What will you be bringing?                           multiple &lt;chr [5]&gt;
+## 8 8. How did you hear about this event?                   unique   &lt;chr [5]&gt;
+## 9 9. What times are you available?                        grid     &lt;chr [9]&gt;</code></pre>
 </div>
 </div>
 <div id="conclusion" class="section level1">

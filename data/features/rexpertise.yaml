@@ -1,4 +1,14 @@
 weight: 3
 name: "Expertise R"
 icon: "fab fa-r-project"
-description: "<ul><li>Optimisation de tâches récurrentes</li><li>Création de packages spécifiques</li><li>Automatisation de rapports</li><li>Applications shiny ...</li></ul><p>Le logiciel <a href=\"https://www.r-project.org/\"><i class=\"fab fa-r-project\"></i></a> permet aujourd'hui d'optimiser votre flux de travail. Je mets à disposition mon expertise R  pour développer des outils spécifiques adaptés à votre utilisation quotidienne.</p>"
+description: "
+ - Optimisation de tâches récurrentes
+ 
+ - Création de packages spécifiques
+ 
+ - Automatisation de rapports
+ 
+ - Relecture de scripts ...
+ 
+
+Le logiciel [R](https://www.r-project.org/) permet aujourd'hui d'optimiser votre flux de travail. Je mets à disposition mon expertise R  pour développer des outils spécifiques adaptés à votre utilisation quotidienne."

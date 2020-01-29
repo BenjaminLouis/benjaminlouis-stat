@@ -90,6 +90,7 @@ paginate = 10
     author = "Benjamin"
     defaultKeywords = ["statistics", "R", "shiny", "CSS", "HTML", "versus", "Point_of_View"]
     defaultDescription = "Site template made by devcows using hugo"
+    mainSections = ["blog"]
 
     # Google Maps API key (if not set will default to not passing a key.)
     googleMapsApiKey = ""#"AIzaSyCFhtWLJcE30xOAjcbSFi-0fnoVmQZPb1Y"
