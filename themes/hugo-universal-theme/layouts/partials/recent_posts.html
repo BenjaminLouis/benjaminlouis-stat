@@ -20,6 +20,7 @@
                 <!--  replaced by : $posts := .Paginate (where (where .Data.Pages "Type" "blog") ".Params.level" "1") -->
                {{ $posts := .Paginate (where .Data.Pages "Type" "blog") }}
                 {{ range first 3 $posts.Pages }}
+                {{ .Title }} - {{ .URL }}
                 <div class="col-md-4 col-sm-6">
                     <div class="box-image-text blog">
                         <div class="top">
