@@ -11,6 +11,7 @@ type: "blog"
 
 
 <p>Il y a quelques mois, j’ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les <a href="https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/">10 commandements d’une base de données réussie</a>, un travail de nettoyage était nécessaire. J’ai eu besoin des intitulés des questions et les réponses possibles mais ils n’étaient pas fournis par le client. Deux choix s’offraient à moi pour les récupérer : soit via le fichier <code>PDF</code>, soit directement via la page <code>HTML</code>. Je teste ici les deux possibilités d’extraction de données.</p>
+<!--more-->
 <div id="quels-outils-pour-quel-résultat" class="section level2">
 <h2>Quels outils pour quel résultat</h2>
 <p>En plus de packages spécifiques présentés plus tard, ce travail est avant tout un travail de manipulation de données et évidemment les packages du <a href="https://www.tidyverse.org/">tidyverse</a> vont nous être utiles : <a href="https://dplyr.tidyverse.org/">dplyr</a> pour la manipulation de données en général, <a href="https://purrr.tidyverse.org/">purrr</a> pour la programmation fonctionnelle et <a href="https://stringr.tidyverse.org/">stringr</a> pour la manipulation de chaîne de caractères.</p>

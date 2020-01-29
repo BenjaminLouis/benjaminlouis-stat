@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 
 Il y a quelques mois, j'ai eu à analyser les réponses à un formulaire Google. Le jeu de données fourni ne respectant pas les [10 commandements d’une base de données réussie](https://https://rtask.thinkr.fr/fr/les-dix-commandements-dune-base-de-donnees-reussie/), un travail de nettoyage était nécessaire. J'ai eu besoin des intitulés des questions et les réponses possibles mais ils n'étaient pas fournis par le client. Deux choix s'offraient à moi pour les récupérer : soit via le fichier `PDF`, soit directement via la page `HTML`. Je teste ici les deux possibilités d'extraction de données.
 
+<!--more-->
+
 ## Quels outils pour quel résultat
 
 En plus de packages spécifiques présentés plus tard, ce travail est avant tout un travail de manipulation de données et évidemment les packages du [tidyverse](https://www.tidyverse.org/) vont nous être utiles : [dplyr](https://dplyr.tidyverse.org/) pour la manipulation de données en général, [purrr](https://purrr.tidyverse.org/) pour la programmation fonctionnelle et [stringr](https://stringr.tidyverse.org/) pour la manipulation de chaîne de caractères.
