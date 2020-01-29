@@ -26,6 +26,7 @@
                 <!--  replaced by : $paginator := .Paginate (where (where .Data.Pages "Type" "blog") ".Params.level" "1") -->
                 {{ $paginator := .Paginate (where .Data.Pages "Type" "blog") }}
                 {{ range first 3 $paginator.Pages }}
+                {{ .Title }} - {{ .URL }} <br/>
                         <section class="post">
                             <div class="row">
                                 <div class="col-md-4">
