@@ -1,0 +1,31 @@
+---
+title: "Mes astuces préférées pour travailler avec ggplot dans un document RMarkdown"
+author: "Benjamin Louis"
+date: '2020-05-21'
+slug: fr
+categories:
+  - configuration
+  - astuces
+tags:
+  - R
+  - rmarkdown
+  - ggplot2
+---
+
+Écrire un document R Markdown (#ref) permet d'insérer du code R et les résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, ...). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
+
+Une analyse de données passe forcément par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais `ggplot2` (#ref) reste mon préféré (et je sais ne pas être seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
+
+R markdown et `ggplot2` ont selon moi un avantage commun essentiel : leurs rendus sont hautement personnalisables ! Cet avantage tourne vite à l'inconvénient lorsque l'on débute : il existe tellement d'options qu'il est parfois fastidieux de savoir lesquelles utilisées et comment les combiner. Les configurations qui m'ont demandé le plus de temps sont celles concernant la taille des graphiques et la taille relative des éléments des graphques (textes, légendes, ...). Dans cet article, je vous partage quelques astuces qui me permettent d'arriver à mes objectifs et ceux de mes clients.
+
+
+Goal
+
+Making your theme
+
+Size and size ratio of R generated figure
+
+size of figure in the document
+
+Don't repeat yourself
+
