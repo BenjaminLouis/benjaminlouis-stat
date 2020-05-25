@@ -195,7 +195,7 @@ Le principal défi est d'utiliser le bon sélecteur `CSS`. Pour cela, l'outil [S
 __blocs de question__
 
 
-[![selectorgadget](/blog/2019-04-03-pdf-vs-html_files/sg.png){width=30%}](/blog/2019-04-03-pdf-vs-html_files/sg.png)
+[![selectorgadget](/blog/2019-04-03-pdf-vs-html_files/sg.png){style="width:30%;float:right;"}](/blog/2019-04-03-pdf-vs-html_files/sg.png)
 
 
 Les blocs de question (intitulé + réponses possibles) sont contenus dans des noeuds ayant comme classe `CSS` `freebirdFormeditorViewItemContent`.

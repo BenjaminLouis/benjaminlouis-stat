@@ -193,7 +193,7 @@ The real challenge here is to use the right `CSS` selectors. This is where [Sele
 __Question blocs__
 
 
-[![selectorgadget](/blog/2019-04-03-pdf-vs-html_files/sg.png){width=30%}](/blog/2019-04-03-pdf-vs-html_files/sg.png)
+[![selectorgadget](/blog/2019-04-03-pdf-vs-html_files/sg.png){style="width:30%;float:right;"}](/blog/2019-04-03-pdf-vs-html_files/sg.png)
 
 
 Question blocs (question titles + answer choices) were contained in nodes with `freebirdFormeditorViewItemContent` value for `CSS` class.

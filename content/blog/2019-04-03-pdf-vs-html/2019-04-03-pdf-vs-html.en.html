@@ -160,7 +160,7 @@ form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()<
 <div id="scraping-the-data" class="section level3">
 <h3>Scraping the data</h3>
 <p><strong>Question blocs</strong></p>
-<p><a href="/blog/2019-04-03-pdf-vs-html_files/sg.png"><img src="/blog/2019-04-03-pdf-vs-html_files/sg.png" alt="selectorgadget" style="width:30.0%" /></a></p>
+<p><a href="/blog/2019-04-03-pdf-vs-html_files/sg.png"><img src="/blog/2019-04-03-pdf-vs-html_files/sg.png" alt="selectorgadget" style="width:30%;float:right;" /></a></p>
 <p>Question blocs (question titles + answer choices) were contained in nodes with <code>freebirdFormeditorViewItemContent</code> value for <code>CSS</code> class.</p>
 <p>In this image (click to enlarge), GadgetSelector tells us that there are 18 nodes with these class value when there are only 9 questions in the questionnaire. I wasn’t able to precisely identify what were the extra 9 but I was able to determine how selecting the 9 ones of interest : they all contained a node with <code>CSS</code> class equal to <code>freebirdFormeditorViewItemMinimizedTitleRow</code> that itself contained a text corresponding to the question title.</p>
 <pre class="r"><code>prefix &lt;- function(.x) {paste0(&quot;.freebirdFormeditorView&quot;, .x)}

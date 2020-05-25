@@ -160,7 +160,7 @@ form %&gt;% html_nodes(&quot;body&quot;) %&gt;% html_children() %&gt;% length()<
 <div id="récupérer-les-données" class="section level3">
 <h3>Récupérer les données</h3>
 <p><strong>blocs de question</strong></p>
-<p><a href="/blog/2019-04-03-pdf-vs-html_files/sg.png"><img src="/blog/2019-04-03-pdf-vs-html_files/sg.png" alt="selectorgadget" style="width:30.0%" /></a></p>
+<p><a href="/blog/2019-04-03-pdf-vs-html_files/sg.png"><img src="/blog/2019-04-03-pdf-vs-html_files/sg.png" alt="selectorgadget" style="width:30%;float:right;" /></a></p>
 <p>Les blocs de question (intitulé + réponses possibles) sont contenus dans des noeuds ayant comme classe <code>CSS</code> <code>freebirdFormeditorViewItemContent</code>.</p>
 <p>Dans cette image (cliquer pour agrandir), GadgetSelector nous dit qu’il y a 18 noeuds ayant cette classe alors qu’il y seulement 9 questions dans le questionnaire. Je n’ai pu précisément identifier à quoi correspondent les 9 supplémentaires mais il s’avère que les 9 qui nous intéressent contiennent tous un noeud avec une classe <code>CSS</code> égale à <code>freebirdFormeditorViewItemMinimizedTitleRow</code> qui lui-même contient un texte correspondant à l’intitulé de la question.</p>
 <pre class="r"><code>prefix &lt;- function(.x) {paste0(&quot;.freebirdFormeditorView&quot;, .x)}
