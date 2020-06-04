@@ -22,15 +22,22 @@ knitr::opts_chunk$set(
   fig.width = 7)
 ```
 
-Écrire un document R Markdown (#ref) permet d'insérer du code R et les résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, ...). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
 
-Une analyse de données passe forcément par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais `ggplot2` (#ref) reste mon préféré (et je sais ne pas être seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
+Écrire des rapports avec R markdown est un atout précieux dans l'analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec `ggplot2`. Ces deux packages permettant une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s'avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.
 
-R markdown et `ggplot2` ont selon moi un avantage commun essentiel : leurs rendus sont hautement personnalisables ! Cet avantage tourne vite à l'inconvénient lorsque l'on débute : il existe tellement d'options qu'il est parfois fastidieux de savoir lesquelles utilisées et comment les combiner. Les configurations qui m'ont demandé le plus de temps sont celles concernant la taille des graphiques et la taille relative des éléments des graphques (textes, légendes, ...). Dans cet article, je vous partage quelques astuces qui me permettent d'arriver à mes objectifs et ceux de mes clients.
+<!--more-->
+
+# Le contexte
+
+Écrire un document R Markdown (#ref) permet d'insérer du code R et les résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses (#ref) et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
+
+Une analyse de données passe inévitablement par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais `ggplot2` (#ref) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
+
+À force 
 
 __Pré-requis__
 
-1. Dans cette article je pars du principe que vous avez déjà créer un graphique avec `ggplot2` et que vous avez essayer de le personnaliser. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Ici on partira du graphique suivant :
+1. Dans cette article je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Ici on partira du graphique suivant :
 
 ```{r}
 library(ggplot2)
@@ -42,7 +49,7 @@ p <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species, fill 
 p
 ```
 
-2. De même, vous êtes familier avec les documents R Markdown et vous savez ce qu'est un _chunk_. Dans le cas contraire, commencez [ici](https://bookdown.org/yihui/rmarkdown/)
+2. De même, vous avez déjà créé un document R Markdown (_a minima_ vu comment on fait) et vous savez comment intégrer du code R dans ce document (à l'aide d'un _chunk_). Dans le cas contraire, commencez [ici](https://bookdown.org/yihui/rmarkdown/).
 
 # Créer son propre thème `ggplot2`
 
@@ -54,7 +61,7 @@ p + labs(title = "Thème par défaut")
 p + theme_bw() + labs(title = "Avec theme_bw()")
 ```   
 
-Si vous appliquez souvent les mêmes changements via la fonction `theme()`, je vous recommande fortement de créer votre propre thème. Et un thème c'est avant tout une fonction. Voici un exemple de thème personnalisé :
+Si vous appliquez souvent les mêmes changements via la fonction `theme()`, je vous recommande fortement de créer votre propre thème. Voici un exemple personnalisé :
 
 ```{r}
 theme_ben <- function(base_size = 14) {
@@ -89,21 +96,21 @@ p + labs(title = "Thème par défaut")
 p + theme_ben() + labs(title = "Avec mon thème personnalisé")
 ``` 
 
-Pour construire un thème personnalisé on crée donc une fonction R qui part d'un thème `ggplot2` existant qui se rapproche du résultat que l'on veut obtenir et dont on remplace les élèments avec la fonction `theme()`. L'astuce réside dans l'utilisation de `%+replace%` au lieu du traditionnel `+`. Contrairement à ce dernier, `%+replace%` ne fait pas que mettre à jour les éléments d'un thème mais les remplace totalement. 
+Pour construire un thème personnalisé on crée une fonction R qui part d'un thème `ggplot2` existant dont on remplace les élèments avec la fonction `theme()`. L'astuce réside dans l'utilisation de `%+replace%` au lieu du traditionnel `+`. Contrairement à ce dernier, `%+replace%` ne fait pas que mettre à jour les éléments d'un thème mais les remplace totalement. 
 
-C'est maintenant qu'il faut faire intervenir votre créativité. La liste des éléments modifiables est très grande et donc la personnalisation très flexible. Si vous ne connaissez pas vraiment ces éléments, commencez par aller voir la page de la fonction [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html). Dans mon exemple, je fais des modifications sur l'ensemble de la figure (élément `plot.*`), sur la zone où est le graphique (`panel.*`), sur les axes (`axis.*`), la légende (`legend.*`) et les étiquettes des graphiques (`strip.*`) lorsque j'utilise du [facetting](https://ggplot2-book.org/facet.html). 
+C'est maintenant qu'il faut faire intervenir votre créativité. La liste des éléments modifiables est très grande et donc la personnalisation quasi infinie. Vous trouverez cette liste dans la page de la fonction [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html). Dans mon exemple, je fais des modifications sur l'ensemble de la figure (élément `plot.*`), sur la zone où est le graphique (`panel.*`), sur les axes (`axis.*`), la légende (`legend.*`) et les étiquettes des graphiques (`strip.*`) lorsque j'utilise du [facetting](https://ggplot2-book.org/facet.html). 
 
-Les axes et légendes sont pour moi des élèments essentiels et mes choix se portent principalement sur le fait de les mettre plus en valeur que dans le thème par défaut. Cela passe par la taille relative de chacun via l'utilisation de la fonction `rel()` qui retourne une proportion de la taille de base (`base_size`) et de la mise en gras (`face = "bold"`).
+Les axes et légendes sont pour moi des élèments essentiels et mes choix se portent principalement sur leur mise en valeur. Cela passe par leur taille relative via l'utilisation de la fonction `rel()` qui retourne une proportion de la taille de base (`base_size`) et de la mise du texte en gras (`face = "bold"`).
 
 La modification d'un thème peut s'avérer laborieuse au départ mais si vous savez que vous utiliserez très souvent les mêmes réglages, le jeu en vaut la chandelle. Il existe tout un tas de ressources sur internet pour vous aider. N'hésitez pas également à me contacter (#ref), je me ferais un plaisir de vous aider.
 
-Maintenant que c'est fait, vous pouvez intégrer ce thème dans un chunk au début de votre document R Markdown de sorte qu'il soit réutilisable tout le long du document. Vous pouvez également l'intégrer dans un package R (#ref), peut-être avec d'autres thèmes et charger ce package. 
+Vous pouvez intégrer ce thème dans un bloc de code (_chunk_) au début de votre document R Markdown de sorte qu'il soit réutilisable tout le long du document. Vous pouvez également l'intégrer dans un package R (#ref), parmi d'autres, et charger ce package. 
 
 # Votre graphique `ggplot` dans R Markdown
 
-## Options des chunks pour les figures
+## Options des blocs de code pour les figures
 
-Pour intégrer du code R et les résultats de ce code dans un document R Markdown vous utilisez un chunk R avec différentes options :
+Pour intégrer du code R et les résultats de ce code dans un document R Markdown vous utilisez un _chunk_ R avec différentes options :
 
 ````markdown
 `r ''````{r option1 = valeur_option1, option2 = valeur_option2}
@@ -111,18 +118,18 @@ Pour intégrer du code R et les résultats de ce code dans un document R Markdow
 `r ''````
 ````
 
-Certaines de ces options sont spécifiques pour les figures qui sont le résultat du code dans le chunk. Celles qui nous intéressent le plus ici sont :
+Certaines de ces options sont spécifiques pour les figures générées par R via ce code :
 
 + Les options relatives à la taille des figures générées par R
 
 + Les options relatives à la taille des figures dans le document final
 
 
-## Taille figures générées par R
+## Taille des figures générées par R
 
 Les options `fig.width` et `fig.height` permettent respectivement de fixer la largeur et la hauteur de la figure générée par R. Par défaut, leur valeur est fixer à 7 (les dimensions sont en pouces). Une alternative que je préfère personnellement est d'utiliser une seule de ces valeurs (`fig.width`) en association avec une autre option `fig.asp` qui fixe le ratio _hauteur/largeur_ de la figure. Il m'est personnellement plus facile de penser directement en terme de ratio que de donner une taille pour la largeur et une pour la hauteur séparément. Par défaut, `fig.asp` est `NULL` mais je le fixe très souvent à $0,8$ car c'est un ratio qui correspond très souvent au résultat que je cherche.
 
-Les options de taille de la figure générée par R ont des conséquences sur la taille relative des éléments de la figure. Pour une figure `ggplot2`, les textes resteront à la taille définie dans le thème utilisée quelque soit la taille choisie. Un taille importante peut donner un rendu de texte trop petit et vice versa. Il y a donc une interaction entre la taille de votre thème et celle de la figure générée par R.
+Les options de taille de la figure générée par R ont des conséquences sur la taille relative des éléments de la figure. Pour une figure `ggplot2`, ces éléments resteront à la taille définie dans le thème utilisée quelque soit la taille globale choisie pour la figure. Une taille importante peut donner un rendu de texte trop petit et vice versa.
 
 <div class = "grid-container">
 <div class = "row">
@@ -160,7 +167,7 @@ p + theme_ben()
 </div>
 </div>
 
-Pour avoir le rendu qui vous plaît, il vous faudra donc combiner entre les tailles choisies dans votre thème et celles utilisées dans les options du chunk. Pour mon thème, la taille par défaut (`7`) correspond à ce que je veux.
+Pour avoir le rendu qui vous plaît, il vous faudra donc combiner entre les tailles choisies dans votre thème et celles utilisées dans les options du code. Pour mon thème, la taille par défaut (`7`) correspond à ce que je veux.
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 7}
@@ -173,7 +180,7 @@ p + theme_ben()
 ```
 
 
-Il est cependant possible que je fasse évoluer cette taille ponctuellement. Par exemple lorsque les textes des axes sont plus longs ou que le graphique est chargée, je peux choisir une taille plus importante (`8` ou `9`) pour que que les éléments du graphique soit relativement plus petit. Notez que pour le texte, une simple modification de la taille de base dans le thème suffit. Vous pouvez alors obtenir des graphiques similaires en modifiant l'un ou l'autre.
+Lorsque les textes des axes sont plus longs ou que le graphique est chargé, je peux choisir une taille plus importante (`8` ou `9`) pour que que les éléments du graphique soit relativement plus petit. Notez que pour le texte, une simple modification de la taille de base dans le thème suffit. Vous pouvez alors obtenir des graphiques similaires en modifiant l'un ou l'autre.
 
 
 <div class = "grid-container">
@@ -214,9 +221,9 @@ p + theme_ben(base_size = 12)
 
 ## Taille de la figure dans le document
 
-Les figures générées par R dans un document RMarkdown sont exportées (en format png par défaut) avant d'être insérées dans le document final quelque soit sont format. Il est possible de modifier la taille de la figure dans le document final avec les options `out.width` et `out.height`.  
+Les figures générées par R dans un document RMarkdown sont exportées (en format png par défaut) avant d'être insérées dans le document final. Il est possible de modifier la taille de la figure dans le document final avec les options `out.width` et `out.height`.  
 
-Il est rare que j'ai à revoir le ratio entre hauteur et largeur après avoir généré la figure dans R, j'utilise donc quasi systématiquement uniquement `out.width`. La solution qui me paraît la plus favorable pour définir une valeur est en pourcentage. Ainsi, une valeur de 100% donne :
+Il est rare que j'ai à revoir le ratio entre hauteur et largeur après avoir généré la figure dans R, j'utilise donc quasi-systématiquement uniquement `out.width`. La solution qui me paraît la plus favorable pour définir une valeur est en pourcentage. Ainsi, une valeur de 100% donne :
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 7, out.width = "100%}
@@ -244,7 +251,7 @@ Vous voyez que cette fois-ci, la taille relative des éléments est inchangée. 
 
 # Éviter de vous répéter
 
-Il est toujours frustrant de devoir écrire plusieurs fois la même chose dans une document. Ici, à chaque chunk avec une figre `ggplot2`, il faut préciser notre nouveau thème et les valeurs des options duchunk correspondant à la taille de la figure. Pas de panique, il existe des solutions pour combler votre (ma!) fainéantise.
+Il est toujours frustrant de devoir écrire plusieurs fois la même chose dans une document. Ici, à chaque bloc de code avec une figure `ggplot2`, il faut préciser notre nouveau thème et les valeurs des options du code correspondant à la taille de la figure. Pas de panique, il existe des solutions pour combler votre (ma!) fainéantise.
 
 #### Changer le thème `ggplot2` par défaut
 
@@ -254,9 +261,9 @@ Vous pouvez changer le thème par défaut pour `ggplot2` avec la fonction `theme
 theme_set(theme_ben()) # remplacer theme_ben() par le nom du thème voulu
 ```
 
-#### Changer les valeurs par défaut des options chunk
+#### Changer les valeurs par défaut des options des blocs de code
 
-Vous pouvez changer les valeurs par défaut des options chunk avec ce chunk en début de document :
+Vous pouvez changer les valeurs par défaut des options des blocs de code en mettant celui-ci en début de document :
 
 ````markdown
 `r ''````{r setup, include=FALSE}
@@ -267,7 +274,7 @@ knitr::opts_chunk$set(
 )
 `r ''````
 ````
-Ces valeurs seront appliquées à tous les chunk de votre document à moins que vous n'en spécifiez d'autres ponctuellement. Vous pouvez alors mettre les options que vous utilisez souvent et éviter d'avoir à les recopier à chaque fois.
+Ces valeurs seront appliquées à tous les blocs de code sauf spécification contraire ponctuelle. Vous pouvez alors mettre les options que vous utilisez souvent et éviter d'avoir à les recopier à chaque fois.
 
 #### À quoi peut ressembler le début de votre document R Markdown
 
@@ -306,8 +313,8 @@ theme_set(theme_ben())
 `r ''````
 ````
 
-À vous désormais de modifier tout ce que vous voulez pour créer un thème ggplot2 et mettre vos valeurs préférées d'options chunk par défaut. Ces options ne se limitent pas à celles des figures R, n'hésitez pas à consulter [cette page](https://yihui.org/knitr/options/) pour en découvrir d'autres.
+À vous désormais de modifier tout ce que vous souhaitez pour créer un thème ggplot2 et mettre vos valeurs préférées d'options de code par défaut. Ces options ne se limitent pas à celles des figures R, n'hésitez pas à consulter [cette page](https://yihui.org/knitr/options/) pour en découvrir d'autres.
 
-J'espère que cette article vous aura aider à écrire des rapports qui vous plaisent et n'hésitez pas à partager vos astuces en commentaire.
+J'espère que cette article vous aura aider à écrire des rapports qui vous plaisent et n'hésitez pas à partager vos astuces en commentaire!
 
 
