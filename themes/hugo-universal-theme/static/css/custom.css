@@ -22,7 +22,12 @@ body.boxed #all {
 
 p {
   text-align: justify;
-  font-size: 15pt;
+}
+
+#blog-post p, 
+#blog-post li {
+  text-align: justify;
+  font-size: 14pt;
 }
 
 /*********************************************************************

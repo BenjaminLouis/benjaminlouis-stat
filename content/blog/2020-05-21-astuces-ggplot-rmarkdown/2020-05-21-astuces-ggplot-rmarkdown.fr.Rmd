@@ -10,6 +10,8 @@ tags:
   - R
   - rmarkdown
   - ggplot2
+banner: 'img/banners/rmarkdown-ggplot2.png'
+type: 'blog'
 ---
 
 ```{r setup, include=FALSE}
@@ -23,21 +25,21 @@ knitr::opts_chunk$set(
 ```
 
 
-Écrire des rapports avec R markdown est un atout précieux dans l'analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec `ggplot2`. Ces deux packages permettant une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s'avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.
+Écrire des rapports avec R markdown est un atout précieux dans l'analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec `ggplot2`. Ces deux packages permettent une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s'avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.
 
 <!--more-->
 
 # Le contexte
 
-Écrire un document R Markdown (#ref) permet d'insérer du code R et les résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses (#ref) et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
+Écrire un document [R Markdown](https://rmarkdown.rstudio.com/) permet d'insérer du code R et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
 
-Une analyse de données passe inévitablement par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais `ggplot2` (#ref) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
+Une analyse de données passe inévitablement par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais [`ggplot2`](https://ggplot2.tidyverse.org/) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
 
-À force 
+Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, pour les graphiques `ggplot2`, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j'espère vous seront utiles.
 
 __Pré-requis__
 
-1. Dans cette article je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Ici on partira du graphique suivant :
+1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Ici on partira du graphique suivant :
 
 ```{r}
 library(ggplot2)
