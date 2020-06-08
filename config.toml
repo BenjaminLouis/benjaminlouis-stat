@@ -1,6 +1,6 @@
-baseurl = "/"
+#baseurl = "/"
 #baseurl = "https://www.benjaminlouis-stat.fr/"
-#baseurl = "https://benjaminlouis-stat.netlify.com/"
+baseurl = "https://benjaminlouis-stat.netlify.com/"
 title = "Benjamin Louis | Data Scientist - Expertise R - Consultance et Formation"
 theme = "hugo-universal-theme"
 languageCode = "en-us"
