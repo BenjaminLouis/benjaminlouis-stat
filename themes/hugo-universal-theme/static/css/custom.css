@@ -9,14 +9,18 @@
   min-height: 230px;
 }
 
+body {
+  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
 
 @media (min-width: 1300px) {
 body.boxed {
   background: none;
-  background-color: rgb(23, 37, 45);
+  background-color: #f4f6ff;/*rgb(23, 37, 45);*/
 }
 body.boxed #all {
   box-shadow: none;
+  width: 100%;
 }
 }
 
@@ -27,8 +31,32 @@ p {
 #blog-post p, 
 #blog-post li {
   text-align: justify;
-  font-size: 14pt;
+  font-size: 18px;
 }
+
+
+/******
+
+CONTAINER
+
+*******/
+
+/*.container {
+    width: 95%;
+}*/
+
+/*@media (min-width: 992px) {
+.container {
+    width: 85%;
+}
+}*/
+
+@media (min-width: 700px) {
+.container {
+    width: 85%;
+}
+}
+
 
 /*********************************************************************
 
@@ -51,6 +79,22 @@ p {
   
 }
 
+.navbar {
+  background-color: #2c3e50;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: white;
+    background-color: transparent;
+}
+
+.navbar-default .navbar-nav > li > a:hover, 
+.navbar-default .navbar-nav > li > a:focus {
+    color: white;
+    background-color: #18bc9c;
+}
+
+
 /*body.boxed .navbar-affixed-top.affix {
   position: fixed;
   width: 80;
@@ -71,9 +115,61 @@ body.boxed .navbar-affixed-top.affix {
 }
 @media (min-width: 1300px) {
   body.boxed .navbar-affixed-top.affix {
-    width: 1200px;
+    width: 100%;
 }
 }
+
+
+
+/*********************************************************************
+
+
+                                WELCOME
+
+
+**********************************************************************/
+
+.welcome {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  text-align: center;
+  background-color: #127681;
+  border-top: 5px solid #f3c623;
+  margin-bottom: 0px;
+  opacity: 0.9;
+}
+
+.welcome .bienvenue {
+  animation: slideInLeft;
+  animation-duration: 2s;
+}
+
+.welcome .img-responsive {
+  animation: slideInRight;
+  animation-duration: 2s;
+  display: block;
+  margin: auto;
+}
+
+
+.welcome p {
+  font-size: 20px;
+  text-align: center;
+  color: #f5f0e3;
+}
+
+.welcome h1, .wlecome h2, .welcome h3 {
+  color: #f5f0e3;
+}
+
+.high {
+  background-color: white;
+  opacity: 2;
+  padding: 0 10px;
+  color: black;
+  border-radius: 10px;
+}
+
 
 /*********************************************************************
 
@@ -83,8 +179,8 @@ body.boxed .navbar-affixed-top.affix {
 
 **********************************************************************/
 .home-carousel .owl-carousel {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 0px;/*20px;*/
+  padding-bottom: 0px;/*20px;*/
 }
 
 .home-carousel h1,
@@ -92,7 +188,7 @@ body.boxed .navbar-affixed-top.affix {
 .home-carousel h3,
 .home-carousel p,
 .home-carousel ul {
-  color: rgb(200, 200, 200)/*#fff*/;
+  color: #f4f6ff;
 }
 
 /*.home-carousel {
@@ -100,7 +196,9 @@ body.boxed .navbar-affixed-top.affix {
 }*/
 
 .home-carousel .dark-mask {
-  background-color: rgb(23, 37, 45);
+  background-color: #127681;/*#015668;/*rgb(23, 37, 45);*/
+  /*border-top: 5px solid #f3c623;*/
+  opacity: 0.7;
 }
 
 .home-carousel .img-responsive {
@@ -112,6 +210,9 @@ body.boxed .navbar-affixed-top.affix {
   font-size: 20px;
 }
 
+.desccarou {
+  text-align: center;
+}
 
 /*********************************************************************
 
@@ -124,15 +225,40 @@ body.boxed .navbar-affixed-top.affix {
   padding: 30px 0;
 }
 
+
+.bar .dark-mask {
+    background: none;
+}
+
+
+.heading h1, .heading h2, .heading h3, .heading h4, .heading h5 {
+    border-bottom: solid 5px #f3c623;
+}
+
 /* features */
 /*----------*/
 
+.bar .icon {
+  background-color: #2c3e50;
+  color: #f4f6ff;
+  border: none;
+}
+
+.box-simple .features-name {
+  box-sizing: border-box;
+}
+
+.box-simple .features-name h3 {
+  box-sizing: border-box;
+  border-bottom: solid 2px #f3c623;
+}
+
 .box-simple ul {
   list-style-type: none;
-  text-align: center;
+  /*text-align: left;*/
   padding-left: 0;
   padding-bottom: 5px;
-  line-height: 18px;
+  line-height: 20px;
 }
 
 .box-simple {
@@ -141,7 +267,7 @@ body.boxed .navbar-affixed-top.affix {
 
 .box-simple p {
   text-align: justify;
-  font-size: 11pt;
+  font-size: 18px;
   color: #555555;
 }
 
@@ -150,15 +276,15 @@ body.boxed .navbar-affixed-top.affix {
   text-align: center;
   padding-left: 0;
   padding-bottom: 5px;
-  line-height: 18px;
+  line-height: 20px;
 }
 
 .box-simple ul li {
   position: relative;
   padding-left: 20px;
   margin-bottom: 10px;
-  text-align: justify;
-  font-size: 12pt;
+  text-align: left;
+  font-size: 18px;
   font-weight: bold;
 }
 
@@ -174,14 +300,16 @@ body.boxed .navbar-affixed-top.affix {
 /* qui suis-je */
 /*----------*/
 .bar.background-image-fixed-2 {
-  background: url(../img/portfolio-6.jpg) center top no-repeat;
+  /*background: url(../img/portfolio-6.jpg) center top no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  color: black;
+  color: black;*/
+  background-color: #127681;
+  opacity: 0.9;
 }
 .bar.background-image-fixed-2 p {
   font-weight: bold;
-  font-size: 15px;
+  font-size: 16px;
   text-align: justify;
 }
 
@@ -194,6 +322,10 @@ body.boxed .navbar-affixed-top.affix {
   text-align: justify;
   /*height: 250px;*/
 }
+.box-image-text .content p {
+    color: black;
+    font-size: 16px;
+}
 .box-image-text .content h4 {
 /*  height: 80px;
   display: table-cell;
@@ -205,7 +337,7 @@ body.boxed .navbar-affixed-top.affix {
   text-align: center;
 }
 .box-image-text .content h4 a {
-  color: rgb(23, 37, 45);
+  color: black;/*rgb(23, 37, 45);*/
   display: table-cell;
   vertical-align: middle;
 }
@@ -264,6 +396,14 @@ pre code {
   border-radius: 4px;
 }
 
+code {
+    padding: 2px 4px;
+    font-size: 95%;
+    color: #127681;
+    background-color: transparent;
+    border-radius: 4px;
+}
+
 
 .btn.btn-primary.btn-lg {
   background-color: #0E8C1F;
@@ -294,6 +434,26 @@ pre code {
 
 img.flags {
   height: 20px;
+}
+
+/*panel side bar*/
+.panel.sidebar-menu .panel-heading h1, .panel.sidebar-menu .panel-heading h2, .panel.sidebar-menu .panel-heading h3, .panel.sidebar-menu .panel-heading h4, .panel.sidebar-menu .panel-heading h5 {
+    border-bottom: solid 5px #f3c623;
+}
+
+.panel-body a {
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.panel.sidebar-menu ul.tag-cloud li a {
+  color: #2c3e50;
+}
+
+.btn-template-main {
+    color: #2c3e50;
+    background-color: #ffffff;
+    border-color: #2c3e50;
 }
 
 /*********************************************************************

@@ -1,6 +1,6 @@
-#baseurl = "/"
+baseurl = "/"
 #baseurl = "https://www.benjaminlouis-stat.fr/"
-baseurl = "https://benjaminlouis-stat.netlify.com/"
+#baseurl = "https://benjaminlouis-stat.netlify.com/"
 title = "Benjamin Louis | Data Scientist - Expertise R - Consultance et Formation"
 theme = "hugo-universal-theme"
 languageCode = "en-us"
@@ -150,13 +150,14 @@ paginate = 10
     search = true
 
 [params.carousel]
-    enable = true
+    enable = false
     # All carousel items are defined in their own files. You can find example items
     # at 'exampleSite/data/carousel'.
     # For more informtion take a look at the README.
 
 [params.features]
     enable = true
+    title = "Services"
     # All features are defined in their own files. You can find example items
     # at 'exampleSite/data/features'.
     # For more informtion take a look at the README.

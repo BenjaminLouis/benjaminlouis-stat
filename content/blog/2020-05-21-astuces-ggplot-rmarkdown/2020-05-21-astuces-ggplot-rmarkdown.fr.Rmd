@@ -255,7 +255,7 @@ Vous voyez que cette fois-ci, la taille relative des éléments est inchangée. 
 
 Il est toujours frustrant de devoir écrire plusieurs fois la même chose dans une document. Ici, à chaque bloc de code avec une figure `ggplot2`, il faut préciser notre nouveau thème et les valeurs des options du code correspondant à la taille de la figure. Pas de panique, il existe des solutions pour combler votre (ma!) fainéantise.
 
-#### Changer le thème `ggplot2` par défaut
+## Changer le thème `ggplot2` par défaut
 
 Vous pouvez changer le thème par défaut pour `ggplot2` avec la fonction `theme_set()`. Il suffit pour cela de mettre après création de votre thème (ou chargement du package le contenant) la commande :
 
@@ -263,7 +263,7 @@ Vous pouvez changer le thème par défaut pour `ggplot2` avec la fonction `theme
 theme_set(theme_ben()) # remplacer theme_ben() par le nom du thème voulu
 ```
 
-#### Changer les valeurs par défaut des options des blocs de code
+## Changer les valeurs par défaut des options des blocs de code
 
 Vous pouvez changer les valeurs par défaut des options des blocs de code en mettant celui-ci en début de document :
 
@@ -278,7 +278,7 @@ knitr::opts_chunk$set(
 ````
 Ces valeurs seront appliquées à tous les blocs de code sauf spécification contraire ponctuelle. Vous pouvez alors mettre les options que vous utilisez souvent et éviter d'avoir à les recopier à chaque fois.
 
-#### À quoi peut ressembler le début de votre document R Markdown
+## À quoi peut ressembler le début de votre document R Markdown
 
 Avec ces astuces, voilà à quoi peut ressembler le début d'un document RMarkdown dont la sortie sera sous format HTML :
 

@@ -11,11 +11,12 @@ tags:
   - rmarkdown
   - ggplot2
 banner: 'img/banners/rmarkdown-ggplot2.png'
+type: 'blog'
 ---
 
 
 
-<p>Écrire des rapports avec R markdown est un atout précieux dans l’analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec <code>ggplot2</code>. Ces deux packages permettant une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s’avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.</p>
+<p>Écrire des rapports avec R markdown est un atout précieux dans l’analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec <code>ggplot2</code>. Ces deux packages permettent une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s’avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.</p>
 <!--more-->
 <div id="le-contexte" class="section level1">
 <h1>Le contexte</h1>
@@ -158,13 +159,13 @@ p + theme_ben()
 <div id="éviter-de-vous-répéter" class="section level1">
 <h1>Éviter de vous répéter</h1>
 <p>Il est toujours frustrant de devoir écrire plusieurs fois la même chose dans une document. Ici, à chaque bloc de code avec une figure <code>ggplot2</code>, il faut préciser notre nouveau thème et les valeurs des options du code correspondant à la taille de la figure. Pas de panique, il existe des solutions pour combler votre (ma!) fainéantise.</p>
-<div id="changer-le-thème-ggplot2-par-défaut" class="section level4">
-<h4>Changer le thème <code>ggplot2</code> par défaut</h4>
+<div id="changer-le-thème-ggplot2-par-défaut" class="section level2">
+<h2>Changer le thème <code>ggplot2</code> par défaut</h2>
 <p>Vous pouvez changer le thème par défaut pour <code>ggplot2</code> avec la fonction <code>theme_set()</code>. Il suffit pour cela de mettre après création de votre thème (ou chargement du package le contenant) la commande :</p>
 <pre class="r"><code>theme_set(theme_ben()) # remplacer theme_ben() par le nom du thème voulu</code></pre>
 </div>
-<div id="changer-les-valeurs-par-défaut-des-options-des-blocs-de-code" class="section level4">
-<h4>Changer les valeurs par défaut des options des blocs de code</h4>
+<div id="changer-les-valeurs-par-défaut-des-options-des-blocs-de-code" class="section level2">
+<h2>Changer les valeurs par défaut des options des blocs de code</h2>
 <p>Vous pouvez changer les valeurs par défaut des options des blocs de code en mettant celui-ci en début de document :</p>
 <pre class="markdown"><code>```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -175,8 +176,8 @@ knitr::opts_chunk$set(
 ```</code></pre>
 <p>Ces valeurs seront appliquées à tous les blocs de code sauf spécification contraire ponctuelle. Vous pouvez alors mettre les options que vous utilisez souvent et éviter d’avoir à les recopier à chaque fois.</p>
 </div>
-<div id="à-quoi-peut-ressembler-le-début-de-votre-document-r-markdown" class="section level4">
-<h4>À quoi peut ressembler le début de votre document R Markdown</h4>
+<div id="à-quoi-peut-ressembler-le-début-de-votre-document-r-markdown" class="section level2">
+<h2>À quoi peut ressembler le début de votre document R Markdown</h2>
 <p>Avec ces astuces, voilà à quoi peut ressembler le début d’un document RMarkdown dont la sortie sera sous format HTML :</p>
 <pre class="markdown"><code>---
 title: &quot;Mon super titre&quot;

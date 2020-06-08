@@ -39,7 +39,9 @@
 
   <!-- Custom stylesheet - for your changes -->
   <link href="{{ "css/custom.css" | relURL}}" rel="stylesheet">
+  
 
+ 
   <!-- Responsivity for older IE -->
   {{ `
     <!--[if lt IE 9]>
@@ -72,13 +74,19 @@
 
 
 <!-- Global site tag (gtag.js) - Google Analytics - Ajout perso-->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ .Site.Params.googleAnalytics }}"></script>
+<!--<script async src="https://www.googletagmanager.com/gtag/js?id={{ .Site.Params.googleAnalytics }}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'UA-117750022-1');
-</script>
+</script>-->
+
+    <!-- Mots qui défilent -->
+  <script type="text/javascript" src="/js/jQuery/jquery.min.js"></script>
+  <script type="text/javascript" src="/plugins/slider/slider.js"></script> 
+  <link rel="stylesheet" href="/plugins/slider/slider.css">
+
 
 </head>
