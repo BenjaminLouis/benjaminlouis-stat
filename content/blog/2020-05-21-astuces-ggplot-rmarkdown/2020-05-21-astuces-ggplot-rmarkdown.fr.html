@@ -25,16 +25,17 @@ type: 'blog'
 <p>Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, pour les graphiques <code>ggplot2</code>, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j’espère vous seront utiles.</p>
 <p><strong>Pré-requis</strong></p>
 <ol style="list-style-type: decimal">
-<li>Je pars du principe que vous avez déjà créer un graphique avec <code>ggplot2</code> ou <em>a minima</em> vu des lignes de code utilisant <code>ggplot2</code>. Si ça n’est pas le cas, vous pouvez commencer par consulter <a href="https://ggplot2-book.org/">ce livre</a> disponible gratuitement en ligne. Ici on partira du graphique suivant :</li>
+<li>Je pars du principe que vous avez déjà créer un graphique avec <code>ggplot2</code> ou <em>a minima</em> vu des lignes de code utilisant <code>ggplot2</code>. Si ça n’est pas le cas, vous pouvez commencer par consulter <a href="https://ggplot2-book.org/">ce livre</a> disponible gratuitement en ligne. Pour <a href="https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/">ne plus utiliser le jeu de données <code>iris</code></a>, j’utilise une représentation graphique du jeu de données sur <a href="https://github.com/allisonhorst/penguins">les pingouins d’Antarctique</a> mis très récemment en package R par <a href="https://twitter.com/allison_horst?s=20">Allison Horst</a> (allez voir <a href="https://github.com/allisonhorst/stats-illustrations">ses dessins</a> également !). On partira du graphique suivant :</li>
 </ol>
 <pre class="r"><code>library(ggplot2)
-p &lt;- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species, fill = Species)) +
+p &lt;- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species, fill = species)) +
   geom_point() +
   geom_smooth(method = &quot;lm&quot;, formula = &quot;y ~ x&quot;, alpha = 0.3) +
   scale_color_viridis_d() +
-  scale_fill_viridis_d()
+  scale_fill_viridis_d() +
+  labs(x = &quot;Culmen Length (mm)&quot;, y = &quot;Culmen depth (mm)&quot;, fill = &quot;Species&quot;, color = &quot;Species&quot;)
 p</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-1-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-2-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <ol start="2" style="list-style-type: decimal">
 <li>De même, vous avez déjà créé un document R Markdown (<em>a minima</em> vu comment on fait) et vous savez comment intégrer du code R dans ce document (à l’aide d’un <em>chunk</em>). Dans le cas contraire, commencez <a href="https://bookdown.org/yihui/rmarkdown/">ici</a>.</li>
 </ol>
@@ -44,7 +45,7 @@ p</code></pre>
 <p>Le thème <code>ggplot2</code> correspond à l’apparence du graphique. Il est possible de changer des éléments un par un via la fonction <a href="https://ggplot2.tidyverse.org/reference/theme.html"><code>theme()</code></a> mais il existe également des thèmes pré-configurés. Par défaut c’est <code>theme_gray()</code> qui est utilisé. Personnellement j’utilise plus souvent <code>theme_bw()</code> (pour black and white).</p>
 <pre class="r"><code>p + labs(title = &quot;Thème par défaut&quot;)
 p + theme_bw() + labs(title = &quot;Avec theme_bw()&quot;)</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-2-.gif" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-3-.gif" width="70%" style="display: block; margin: auto;" /></p>
 <p>Si vous appliquez souvent les mêmes changements via la fonction <code>theme()</code>, je vous recommande fortement de créer votre propre thème. Voici un exemple personnalisé :</p>
 <pre class="r"><code>theme_ben &lt;- function(base_size = 14) {
   theme_bw(base_size = base_size) %+replace%
@@ -72,7 +73,7 @@ p + theme_bw() + labs(title = &quot;Avec theme_bw()&quot;)</code></pre>
 <p>Et voici ce que ça donne en comparaison du thème par défaut :</p>
 <pre class="r"><code>p + labs(title = &quot;Thème par défaut&quot;)
 p + theme_ben() + labs(title = &quot;Avec mon thème personnalisé&quot;)</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-4-.gif" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-5-.gif" width="70%" style="display: block; margin: auto;" /></p>
 <p>Pour construire un thème personnalisé on crée une fonction R qui part d’un thème <code>ggplot2</code> existant dont on remplace les élèments avec la fonction <code>theme()</code>. L’astuce réside dans l’utilisation de <code>%+replace%</code> au lieu du traditionnel <code>+</code>. Contrairement à ce dernier, <code>%+replace%</code> ne fait pas que mettre à jour les éléments d’un thème mais les remplace totalement.</p>
 <p>C’est maintenant qu’il faut faire intervenir votre créativité. La liste des éléments modifiables est très grande et donc la personnalisation quasi infinie. Vous trouverez cette liste dans la page de la fonction <a href="https://ggplot2.tidyverse.org/reference/theme.html"><code>theme()</code></a>. Dans mon exemple, je fais des modifications sur l’ensemble de la figure (élément <code>plot.*</code>), sur la zone où est le graphique (<code>panel.*</code>), sur les axes (<code>axis.*</code>), la légende (<code>legend.*</code>) et les étiquettes des graphiques (<code>strip.*</code>) lorsque j’utilise du <a href="https://ggplot2-book.org/facet.html">facetting</a>.</p>
 <p>Les axes et légendes sont pour moi des élèments essentiels et mes choix se portent principalement sur leur mise en valeur. Cela passe par leur taille relative via l’utilisation de la fonction <code>rel()</code> qui retourne une proportion de la taille de base (<code>base_size</code>) et de la mise du texte en gras (<code>face = "bold"</code>).</p>
@@ -104,14 +105,14 @@ p + theme_ben() + labs(title = &quot;Avec mon thème personnalisé&quot;)</code>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 3}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-5-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-6-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 <div class="col-6">
 <p><strong><code>fig.width = 10</code> - éléments du graphique relativement trop petits</strong></p>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 10}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-6-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-7-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -119,7 +120,7 @@ p + theme_ben()
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-7-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Lorsque les textes des axes sont plus longs ou que le graphique est chargé, je peux choisir une taille plus importante (<code>8</code> ou <code>9</code>) pour que que les éléments du graphique soit relativement plus petit. Notez que pour le texte, une simple modification de la taille de base dans le thème suffit. Vous pouvez alors obtenir des graphiques similaires en modifiant l’un ou l’autre.</p>
 <div class="grid-container">
 <div class="row">
@@ -128,14 +129,14 @@ p + theme_ben()
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 9}
 p + theme_ben(base_size = 14)
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-8-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-9-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 <div class="col-6">
 <p><strong><code>fig.width = 7</code> (défaut) - <code>base_size = 12</code></strong></p>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7}
 p + theme_ben(base_size = 12)
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-9-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-10-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -147,12 +148,12 @@ p + theme_ben(base_size = 12)
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7, out.width = &quot;100%}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>tandis qu’une valeur de 50% donne :</p>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7, out.width = &quot;50%}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-11-1.png" width="50%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-12-1.png" width="50%" style="display: block; margin: auto;" /></p>
 <p>Vous voyez que cette fois-ci, la taille relative des éléments est inchangée. Le graphique est le même, il est simplement montré avec une taille plus ou moins grande.</p>
 </div>
 </div>
@@ -209,6 +210,21 @@ theme_ben &lt;- function(base_size = 14) {
 theme_set(theme_ben())
 ```</code></pre>
 <p>À vous désormais de modifier tout ce que vous souhaitez pour créer un thème ggplot2 et mettre vos valeurs préférées d’options de code par défaut. Ces options ne se limitent pas à celles des figures R, n’hésitez pas à consulter <a href="https://yihui.org/knitr/options/">cette page</a> pour en découvrir d’autres.</p>
-<p>J’espère que cette article vous aura aider à écrire des rapports qui vous plaisent et n’hésitez pas à partager vos astuces en commentaire!</p>
+<p>J’espère que cette article vous aura aidé à écrire des rapports qui vous plaisent et n’hésitez pas à partager vos astuces en commentaire!</p>
+<div class="smaller">
+<blockquote>
+<h4 id="disponibilités-des-données">Disponibilités des données</h4>
+<ul>
+<li><strong>Données disponibles</strong> via licence <a href="https://creativecommons.org/share-your-work/public-domain/cc0/">CC-0</a> en accord avec <a href="http://pal.lternet.edu/data/policies">Palmer Station LTER Data Policy</a> et <a href="https://lternet.edu/data-access-policy/">LTER Data Access Policy for Type I data</a>.</li>
+</ul>
+<h4 id="références-des-données">Références des données</h4>
+<ul>
+<li><p><strong>Adélie penguins</strong>: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic &gt; signatures of foraging among adult male and female Adélie penguins (<em>Pygoscelis adeliae</em>) nesting along the Palmer &gt; Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. &gt; <a href="https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f" class="uri">https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f</a>.</p></li>
+<li><p><strong>Gentoo penguins</strong>: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic &gt; signatures of foraging among adult male and female Gentoo penguin (<em>Pygoscelis papua</em>) nesting along the Palmer &gt; Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. &gt; <a href="https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689" class="uri">https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689</a>.</p></li>
+<li><p><strong>Chinstrap penguins</strong>: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and &gt; isotopic signatures of foraging among adult male and female Chinstrap penguin (<em>Pygoscelis antarcticus</em>) nesting along &gt; the Palmer Archipelago near Palmer Station, 2007-2009 ver 6. Environmental Data Initiative. &gt; <a href="https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e" class="uri">https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e</a>.</p></li>
+<li><p><strong>Publication originale:</strong> <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081"><strong>Gorman KB, Williams TD, Fraser WR</strong> (2014) Ecological Sexual Dimorphism and &gt; Environmental Variability within a Community of Antarctic Penguins (Genus <em>Pygoscelis</em>). PLoS ONE 9(3): e90081. &gt; doi:10.1371/journal.pone.0090081</a></p></li>
+</ul>
+</blockquote>
+</div>
 </div>
 </div>

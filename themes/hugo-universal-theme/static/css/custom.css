@@ -618,3 +618,28 @@ img.flags {
 .remark-code-line-highlighted {
     background-color: rgb(51, 51, 51);
 }
+
+
+/****************************************************************
+
+                MISCELLANOUS
+
+*****************************************************************/
+
+
+.smaller * {
+  font-size: small!important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

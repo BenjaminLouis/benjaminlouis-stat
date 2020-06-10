@@ -39,15 +39,42 @@ Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, 
 
 __Pré-requis__
 
-1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Ici on partira du graphique suivant :
+1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Pour [ne plus utiliser le jeu de données `iris`](https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/), j'utilise une représentation graphique du jeu de données sur [les pingouins d'Antarctique](https://github.com/allisonhorst/penguins) mis très récemment en package R par [Allison Horst](https://twitter.com/allison_horst?s=20) (allez voir [ses dessins](https://github.com/allisonhorst/stats-illustrations) également !). On partira du graphique suivant :
+
+```{r echo = FALSE, message = FALSE, results = 'hide'}
+library(tidyverse)
+library(janitor)
+# Adelie penguin data from: https://doi.org/10.6073/pasta/abc50eed9138b75f54eaada0841b9b86
+uri_adelie <- "https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.219.3&entityid=002f3893385f710df69eeebe893144ff"
+# Gentoo penguin data from: https://doi.org/10.6073/pasta/2b1cff60f81640f182433d23e68541ce
+uri_gentoo <- "https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.220.3&entityid=e03b43c924f226486f2f0ab6709d2381"
+# Chinstrap penguin data from: https://doi.org/10.6073/pasta/409c808f8fc9899d02401bdb04580af7
+uri_chinstrap <- "https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.221.2&entityid=fe853aa8f7a59aa84cdd3197619ef462"
+# Combining the URIs
+uris <- c(uri_adelie, uri_gentoo, uri_chinstrap)
+# Downloading and importing data
+penguins_raw <- map_dfr(uris, read_csv) %>% 
+  clean_names() %>%
+  mutate(species_short = word(species, 1)) %>%
+  select(species_short,
+         island,
+         culmen_length_mm,
+         culmen_depth_mm,
+         flipper_length_mm,
+         body_mass_g,
+         sex) %>%
+  rename(species = species_short)
+```
+
 
 ```{r}
 library(ggplot2)
-p <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species, fill = Species)) +
+p <- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species, fill = species)) +
   geom_point() +
   geom_smooth(method = "lm", formula = "y ~ x", alpha = 0.3) +
   scale_color_viridis_d() +
-  scale_fill_viridis_d()
+  scale_fill_viridis_d() +
+  labs(x = "Culmen Length (mm)", y = "Culmen depth (mm)", fill = "Species", color = "Species")
 p
 ```
 
@@ -317,6 +344,22 @@ theme_set(theme_ben())
 
 À vous désormais de modifier tout ce que vous souhaitez pour créer un thème ggplot2 et mettre vos valeurs préférées d'options de code par défaut. Ces options ne se limitent pas à celles des figures R, n'hésitez pas à consulter [cette page](https://yihui.org/knitr/options/) pour en découvrir d'autres.
 
-J'espère que cette article vous aura aider à écrire des rapports qui vous plaisent et n'hésitez pas à partager vos astuces en commentaire!
+J'espère que cette article vous aura aidé à écrire des rapports qui vous plaisent et n'hésitez pas à partager vos astuces en commentaire!
 
+<div class = "smaller">
 
+> #### Disponibilités des données
+> 
+> - **Données disponibles** via licence [CC-0](https://creativecommons.org/share-your-work/public-domain/cc0/) en accord avec [Palmer Station LTER Data Policy](http://pal.lternet.edu/data/policies) et [LTER Data Access Policy for Type I data](https://lternet.edu/data-access-policy/).
+> 
+> #### Références des données
+> 
+> - **Adélie penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic > signatures of foraging among adult male and female Adélie penguins (*Pygoscelis adeliae*) nesting along the Palmer > Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. > https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f.
+> 
+> - **Gentoo penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic > signatures of foraging among adult male and female Gentoo penguin (*Pygoscelis papua*) nesting along the Palmer > Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. > https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689.
+> 
+> - **Chinstrap penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and > isotopic signatures of foraging among adult male and female Chinstrap penguin (*Pygoscelis antarcticus*) nesting along > the Palmer Archipelago near Palmer Station, 2007-2009 ver 6. Environmental Data Initiative. > https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e.
+> 
+> - **Publication originale:** [**Gorman KB, Williams TD, Fraser WR** (2014) Ecological Sexual Dimorphism and > Environmental Variability within a Community of Antarctic Penguins (Genus *Pygoscelis*). PLoS ONE 9(3): e90081. > doi:10.1371/journal.pone.0090081](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081)
+
+</div>
