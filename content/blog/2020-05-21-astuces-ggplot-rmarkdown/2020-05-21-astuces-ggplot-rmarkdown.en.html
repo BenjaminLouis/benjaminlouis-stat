@@ -1,11 +1,11 @@
 ---
-title: "Mes astuces préférées pour travailler avec ggplot2 dans un document RMarkdown"
+title: "My tips for working with ggplot2 in a RMarkdown document"
 author: "Benjamin Louis"
-date: '2020-06-10'
-slug: fr
+date: '2020-05-21'
+slug: en
 categories:
   - configuration
-  - astuces
+  - tips
 tags:
   - R
   - rmarkdown
@@ -16,10 +16,10 @@ type: 'blog'
 
 
 
-<p>Écrire des rapports avec <a href="https://rmarkdown.rstudio.com/">R Markdown</a> est un atout précieux dans l’analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a>. Ces deux packages permettent une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s’avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.</p>
+<p>Writing a report with <a href="https://rmarkdown.rstudio.com/">R Markdown</a> combined with <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> visualisation is a real advantage for reproducible data analysis. Features of both packages are highly flexible and you CAN always get what you want! But if you are just starting out, getting what you want can be tedious. In this post, I share with you some tips found over time.</p>
 <!--more-->
-<div id="le-contexte" class="section level1">
-<h1>Le contexte</h1>
+<div id="context" class="section level1">
+<h1>Context</h1>
 <p>Écrire un document <a href="https://rmarkdown.rstudio.com/">R Markdown</a> permet d’insérer du code R et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C’est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d’analyse. En tant que personne dont le métier est d’analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.</p>
 <p>Une analyse de données passe inévitablement par l’utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> reste mon préféré (et je sais ne pas être le seul). J’intégre donc fréquemment des graphiques faits avec <code>ggplot2</code> dans mes documents R Markdown.</p>
 <p>Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, pour les graphiques <code>ggplot2</code>, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j’espère vous seront utiles.</p>
@@ -35,7 +35,7 @@ p &lt;- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, colo
   scale_fill_viridis_d() +
   labs(x = &quot;Culmen Length (mm)&quot;, y = &quot;Culmen depth (mm)&quot;, fill = &quot;Species&quot;, color = &quot;Species&quot;)
 p</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-2-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-2-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <ol start="2" style="list-style-type: decimal">
 <li>De même, vous avez déjà créé un document R Markdown (<em>a minima</em> vu comment on fait) et vous savez comment intégrer du code R dans ce document (à l’aide d’un <em>chunk</em>). Dans le cas contraire, commencez <a href="https://bookdown.org/yihui/rmarkdown/">ici</a>.</li>
 </ol>
@@ -45,7 +45,7 @@ p</code></pre>
 <p>Le thème <code>ggplot2</code> correspond à l’apparence du graphique. Il est possible de changer des éléments un par un via la fonction <a href="https://ggplot2.tidyverse.org/reference/theme.html"><code>theme()</code></a> mais il existe également des thèmes pré-configurés. Par défaut c’est <code>theme_gray()</code> qui est utilisé. Personnellement j’utilise plus souvent <code>theme_bw()</code> (pour black and white).</p>
 <pre class="r"><code>p + labs(title = &quot;Thème par défaut&quot;)
 p + theme_bw() + labs(title = &quot;Avec theme_bw()&quot;)</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-3-.gif" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-3-.gif" width="70%" style="display: block; margin: auto;" /></p>
 <p>Si vous appliquez souvent les mêmes changements via la fonction <code>theme()</code>, je vous recommande fortement de créer votre propre thème. Voici un exemple personnalisé :</p>
 <pre class="r"><code>theme_ben &lt;- function(base_size = 14) {
   theme_bw(base_size = base_size) %+replace%
@@ -73,7 +73,7 @@ p + theme_bw() + labs(title = &quot;Avec theme_bw()&quot;)</code></pre>
 <p>Et voici ce que ça donne en comparaison du thème par défaut :</p>
 <pre class="r"><code>p + labs(title = &quot;Thème par défaut&quot;)
 p + theme_ben() + labs(title = &quot;Avec mon thème personnalisé&quot;)</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-5-.gif" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-5-.gif" width="70%" style="display: block; margin: auto;" /></p>
 <p>Pour construire un thème personnalisé on crée une fonction R qui part d’un thème <code>ggplot2</code> existant dont on remplace les élèments avec la fonction <code>theme()</code>. L’astuce réside dans l’utilisation de <code>%+replace%</code> au lieu du traditionnel <code>+</code>. Contrairement à ce dernier, <code>%+replace%</code> ne fait pas que mettre à jour les éléments d’un thème mais les remplace totalement.</p>
 <p>C’est maintenant qu’il faut faire intervenir votre créativité. La liste des éléments modifiables est très grande et donc la personnalisation quasi infinie. Vous trouverez cette liste dans la page de la fonction <a href="https://ggplot2.tidyverse.org/reference/theme.html"><code>theme()</code></a>. Dans mon exemple, je fais des modifications sur l’ensemble de la figure (élément <code>plot.*</code>), sur la zone où est le graphique (<code>panel.*</code>), sur les axes (<code>axis.*</code>), la légende (<code>legend.*</code>) et les étiquettes des graphiques (<code>strip.*</code>) lorsque j’utilise du <a href="https://ggplot2-book.org/facet.html">facetting</a>.</p>
 <p>Les axes et légendes sont pour moi des élèments essentiels et mes choix se portent principalement sur leur mise en valeur. Cela passe par leur taille relative via l’utilisation de la fonction <code>rel()</code> qui retourne une proportion de la taille de base (<code>base_size</code>) et de la mise du texte en gras (<code>face = "bold"</code>).</p>
@@ -105,14 +105,14 @@ p + theme_ben() + labs(title = &quot;Avec mon thème personnalisé&quot;)</code>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 3}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-6-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-6-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 <div class="col-6">
 <p><strong><code>fig.width = 10</code> - éléments du graphique relativement trop petits</strong></p>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 10}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-7-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-7-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -120,7 +120,7 @@ p + theme_ben()
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Lorsque les textes des axes sont plus longs ou que le graphique est chargé, je peux choisir une taille plus importante (<code>8</code> ou <code>9</code>) pour que que les éléments du graphique soit relativement plus petit. Notez que pour le texte, une simple modification de la taille de base dans le thème suffit. Vous pouvez alors obtenir des graphiques similaires en modifiant l’un ou l’autre.</p>
 <div class="grid-container">
 <div class="row">
@@ -129,14 +129,14 @@ p + theme_ben()
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 9}
 p + theme_ben(base_size = 14)
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-9-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-9-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 <div class="col-6">
 <p><strong><code>fig.width = 7</code> (défaut) - <code>base_size = 12</code></strong></p>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7}
 p + theme_ben(base_size = 12)
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-10-1.png" width="95%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-10-1.png" width="95%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -148,12 +148,12 @@ p + theme_ben(base_size = 12)
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7, out.width = &quot;100%}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>tandis qu’une valeur de 50% donne :</p>
 <pre class="markdown"><code>```{r fig.asp = 0.8, fig.width = 7, out.width = &quot;50%}
 p + theme_ben()
 ```</code></pre>
-<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.fr_files/figure-html/unnamed-chunk-12-1.png" width="50%" style="display: block; margin: auto;" /></p>
+<p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-12-1.png" width="50%" style="display: block; margin: auto;" /></p>
 <p>Vous voyez que cette fois-ci, la taille relative des éléments est inchangée. Le graphique est le même, il est simplement montré avec une taille plus ou moins grande.</p>
 </div>
 </div>

@@ -1,11 +1,11 @@
 ---
-title: "Mes astuces préférées pour travailler avec ggplot2 dans un document RMarkdown"
+title: "My tips for working with ggplot2 in a RMarkdown document"
 author: "Benjamin Louis"
-date: '2020-06-10'
-slug: fr
+date: '2020-05-21'
+slug: en
 categories:
   - configuration
-  - astuces
+  - tips
 tags:
   - R
   - rmarkdown
@@ -25,11 +25,11 @@ knitr::opts_chunk$set(
 ```
 
 
-Écrire des rapports avec [R Markdown](https://rmarkdown.rstudio.com/) est un atout précieux dans l'analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec [`ggplot2`](https://ggplot2.tidyverse.org/). Ces deux packages permettent une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s'avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.
+Writing a report with [R Markdown](https://rmarkdown.rstudio.com/) combined with [`ggplot2`](https://ggplot2.tidyverse.org/) visualisation is a real advantage for reproducible data analysis. Features of both packages are highly flexible and you CAN always get what you want! But if you are just starting out, getting what you want can be tedious. In this post, I share with you some tips found over time.
 
 <!--more-->
 
-# Le contexte
+# Context
 
 Écrire un document [R Markdown](https://rmarkdown.rstudio.com/) permet d'insérer du code R et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
 
