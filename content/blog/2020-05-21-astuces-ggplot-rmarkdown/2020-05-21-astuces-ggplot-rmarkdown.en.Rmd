@@ -25,23 +25,24 @@ knitr::opts_chunk$set(
 ```
 
 
-Writing a report with [R Markdown](https://rmarkdown.rstudio.com/) combined with [`ggplot2`](https://ggplot2.tidyverse.org/) visualisation is a real advantage for reproducible data analysis. Features of both packages are highly flexible and you CAN always get what you want! But if you are just starting out, getting what you want can be tedious. In this post, I share with you some tips found over time.
+<!--Writing a report with [R Markdown](https://rmarkdown.rstudio.com/) combined with [`ggplot2`](https://ggplot2.tidyverse.org/) visualisation is a real advantage for reproducible data analysis. Features of both packages are highly flexible and you CAN always get what you want! But if you are just starting out, getting what you want can be cumbersome In this post, I share with you some tips found over time.-->
 
 <!--more-->
 
 # Context
 
-Écrire un document [R Markdown](https://rmarkdown.rstudio.com/) permet d'insérer du code R et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
+Writing [R Markdown](https://rmarkdown.rstudio.com/) document makes possible to insert R code and its results in a report with a choosen output format (HTML, PDF, Word). It is a real asset for analysis reproducibility as well as communication of methods and results. Doing daily data analysis, I usually deliver outputs in report and R Markdown naturally became an essential tool of my workflow.
 
-Une analyse de données passe inévitablement par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais [`ggplot2`](https://ggplot2.tidyverse.org/) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
+Data analysis without data visualisation is like playing darts in the dark, there is a good chance you'll miss the ~~bullseye~~ point. You'll find quite a few R packages to build graphics but I have a preference for [`ggplot2`](https://ggplot2.tidyverse.org/) (I'm not alone!). Therefore, `ggplot2` graphics are often included in my R Markdown documents.
 
-Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, pour les graphiques `ggplot2`, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j'espère vous seront utiles.
+Features of both packages are highly flexible and you **CAN** always get what you want ! But if you are just starting out, getting what you want can be cumbersome. In this post, I share with you some tips found over time.
 
-__Pré-requis__
+__Requirements__
 
-1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Pour [ne plus utiliser le jeu de données `iris`](https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/), j'utilise une représentation graphique du jeu de données sur [les pingouins d'Antarctique](https://github.com/allisonhorst/penguins) mis très récemment en package R par [Allison Horst](https://twitter.com/allison_horst?s=20) (allez voir [ses dessins](https://github.com/allisonhorst/stats-illustrations) également !). On partira du graphique suivant :
 
-```{r echo = FALSE, message = FALSE, results = 'hide'}
+1. I assume you have already made a graphic with `ggplot2` or at least seen some `ggplot2` code. If not, you can have a look at [this book](https://ggplot2-book.org/) freely available online. To [avoid iris data](https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/), I will use a data visualisation of [Antartica penguins data](https://github.com/allisonhorst/penguins) recently included in a R package by [Allison Horst](https://twitter.com/allison_horst?s=20) (go see her [illustrations](https://github.com/allisonhorst/stats-illustrations) too !). I start with this graphic :
+
+```{r echo = FALSE, message = FALSE, results = 'hide', cache = TRUE}
 library(tidyverse)
 library(janitor)
 # Adelie penguin data from: https://doi.org/10.6073/pasta/abc50eed9138b75f54eaada0841b9b86
@@ -78,11 +79,11 @@ p <- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, color =
 p
 ```
 
-2. De même, vous avez déjà créé un document R Markdown (_a minima_ vu comment on fait) et vous savez comment intégrer du code R dans ce document (à l'aide d'un _chunk_). Dans le cas contraire, commencez [ici](https://bookdown.org/yihui/rmarkdown/).
+2. Besides, it's better if you know how to create a R Markdown document and you know how to include R code in it (with a _chunk_). If not, start [here](https://bookdown.org/yihui/rmarkdown/).
 
-# Créer son propre thème `ggplot2`
+# Making your own `ggplot2` theme
 
-Le thème `ggplot2` correspond à l'apparence du graphique. Il est possible de changer des éléments un par un via la fonction [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) mais il existe également des thèmes pré-configurés. Par défaut c'est `theme_gray()` qui est utilisé. Personnellement j'utilise plus souvent `theme_bw()` (pour black and white).
+`ggplot2` theme manages how your graphic looks like. All elemements can be changed through the [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function but there also are pre-configured. The default theme used by `ggplot2` is `theme_gray()` but I often switch for `theme_bw()` (for _black and white_).
 
 
 ```{r animation.hook="gifski", interval = 2}
@@ -90,7 +91,7 @@ p + labs(title = "Thème par défaut")
 p + theme_bw() + labs(title = "Avec theme_bw()")
 ```   
 
-Si vous appliquez souvent les mêmes changements via la fonction `theme()`, je vous recommande fortement de créer votre propre thème. Voici un exemple personnalisé :
+If you always use the same modifications with `theme()` function, I highly suggest that you create your own theme. Here is a customised one :
 
 ```{r}
 theme_ben <- function(base_size = 14) {
@@ -118,22 +119,22 @@ theme_ben <- function(base_size = 14) {
 }
 ```
 
-Et voici ce que ça donne en comparaison du thème par défaut :
+And the results compared to the default one :
 
 ```{r animation.hook="gifski", interval = 2}
 p + labs(title = "Thème par défaut")
 p + theme_ben() + labs(title = "Avec mon thème personnalisé")
 ``` 
 
-Pour construire un thème personnalisé on crée une fonction R qui part d'un thème `ggplot2` existant dont on remplace les élèments avec la fonction `theme()`. L'astuce réside dans l'utilisation de `%+replace%` au lieu du traditionnel `+`. Contrairement à ce dernier, `%+replace%` ne fait pas que mettre à jour les éléments d'un thème mais les remplace totalement. 
+Building a customised theme is done by creating a R function where a pre-configured theme is used but some elements are modified with the `theme()` function. The tip is in the use of `%+replace%` in place of the classic `+`. unlike the latter, `%+replace%` doesn't only update elements of a theme but replaces them entirely.
 
-C'est maintenant qu'il faut faire intervenir votre créativité. La liste des éléments modifiables est très grande et donc la personnalisation quasi infinie. Vous trouverez cette liste dans la page de la fonction [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html). Dans mon exemple, je fais des modifications sur l'ensemble de la figure (élément `plot.*`), sur la zone où est le graphique (`panel.*`), sur les axes (`axis.*`), la légende (`legend.*`) et les étiquettes des graphiques (`strip.*`) lorsque j'utilise du [facetting](https://ggplot2-book.org/facet.html). 
+now you just have to let your creativity flows. There are lots of editable elements so the customisation is pretty much limitless. You can find the list of elements in the webpage of the [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function. In the example, the modified elements are for the whole figure (`plot.*` elements), the grapihic area (`pnael.*`), the axis (`axis.*`), the legend (`legend.*`) and the graphics labels (`strip.*`) when [facetting](https://ggplot2-book.org/facet.html) is used.
 
-Les axes et légendes sont pour moi des élèments essentiels et mes choix se portent principalement sur leur mise en valeur. Cela passe par leur taille relative via l'utilisation de la fonction `rel()` qui retourne une proportion de la taille de base (`base_size`) et de la mise du texte en gras (`face = "bold"`).
+In my opinion, axis and legends are essential elements so my choices go towards highlighted them through their relative size using `rel()` function which return a proportion a the base size (`base_size`) and bolding theme (`face = "bold"`).
 
-La modification d'un thème peut s'avérer laborieuse au départ mais si vous savez que vous utiliserez très souvent les mêmes réglages, le jeu en vaut la chandelle. Il existe tout un tas de ressources sur internet pour vous aider. N'hésitez pas également à me contacter (#ref), je me ferais un plaisir de vous aider.
+Customisation of a `ggplot2` theme can first be hard work but if you are going to often use the same configurations, it's worth it. There are plenty ressources on the web.You can also [contact me](https://benjaminlouis-stat.fr/contact/), I'll be glad to help.
 
-Vous pouvez intégrer ce thème dans un bloc de code (_chunk_) au début de votre document R Markdown de sorte qu'il soit réutilisable tout le long du document. Vous pouvez également l'intégrer dans un package R (#ref), parmi d'autres, et charger ce package. 
+You can now insert your theme in a _chunk_ at the beginning of your R Markdown document to use it all along. You can also create a R package with your theme, among others, and load this package.
 
 # Votre graphique `ggplot` dans R Markdown
 

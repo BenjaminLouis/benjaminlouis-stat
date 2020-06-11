@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 ```
 
 
-Écrire des rapports avec [R Markdown](https://rmarkdown.rstudio.com/) est un atout précieux dans l'analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec [`ggplot2`](https://ggplot2.tidyverse.org/). Ces deux packages permettent une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s'avérer fastidieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.
+Écrire des rapports avec [R Markdown](https://rmarkdown.rstudio.com/) est un atout précieux dans l'analyse reproductible de données, surtout quand on peut insérer des graphiques générés avec [`ggplot2`](https://ggplot2.tidyverse.org/). Ces deux packages permettent une personnalisation très fine, vous arriverez donc toujours au résultat voulu. Mais si vous débutez, obtenir des documents avec de belles figures bien proportionnées peut s'avérer laborieux. Dans cet article, je vous partage quelques astuces trouvées au fil du temps.
 
 <!--more-->
 
@@ -35,13 +35,13 @@ knitr::opts_chunk$set(
 
 Une analyse de données passe inévitablement par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais [`ggplot2`](https://ggplot2.tidyverse.org/) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
 
-Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, pour les graphiques `ggplot2`, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j'espère vous seront utiles.
+Pour obtenir le résultat voulu, il y a tout un tas de configurations possibles, pour les graphiques `ggplot2`, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j'espère vous seront utiles.
 
 __Pré-requis__
 
 1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Pour [ne plus utiliser le jeu de données `iris`](https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/), j'utilise une représentation graphique du jeu de données sur [les pingouins d'Antarctique](https://github.com/allisonhorst/penguins) mis très récemment en package R par [Allison Horst](https://twitter.com/allison_horst?s=20) (allez voir [ses dessins](https://github.com/allisonhorst/stats-illustrations) également !). On partira du graphique suivant :
 
-```{r echo = FALSE, message = FALSE, results = 'hide'}
+```{r echo = FALSE, message = FALSE, results = 'hide', cache = TRUE}
 library(tidyverse)
 library(janitor)
 # Adelie penguin data from: https://doi.org/10.6073/pasta/abc50eed9138b75f54eaada0841b9b86
@@ -131,9 +131,9 @@ C'est maintenant qu'il faut faire intervenir votre créativité. La liste des é
 
 Les axes et légendes sont pour moi des élèments essentiels et mes choix se portent principalement sur leur mise en valeur. Cela passe par leur taille relative via l'utilisation de la fonction `rel()` qui retourne une proportion de la taille de base (`base_size`) et de la mise du texte en gras (`face = "bold"`).
 
-La modification d'un thème peut s'avérer laborieuse au départ mais si vous savez que vous utiliserez très souvent les mêmes réglages, le jeu en vaut la chandelle. Il existe tout un tas de ressources sur internet pour vous aider. N'hésitez pas également à me contacter (#ref), je me ferais un plaisir de vous aider.
+La modification d'un thème peut s'avérer laborieuse au départ mais si vous savez que vous utiliserez très souvent les mêmes réglages, le jeu en vaut la chandelle. Il existe tout un tas de ressources sur internet pour vous aider. N'hésitez pas également à [me contacter](https://benjaminlouis-stat.fr/contact/), je me ferais un plaisir de vous aider.
 
-Vous pouvez intégrer ce thème dans un bloc de code (_chunk_) au début de votre document R Markdown de sorte qu'il soit réutilisable tout le long du document. Vous pouvez également l'intégrer dans un package R (#ref), parmi d'autres, et charger ce package. 
+Vous pouvez intégrer ce thème dans un bloc de code (_chunk_) au début de votre document R Markdown de sorte qu'il soit réutilisable tout le long du document. Vous pouvez également l'intégrer dans un package R, parmi d'autres, et charger ce package. 
 
 # Votre graphique `ggplot` dans R Markdown
 

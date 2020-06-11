@@ -16,16 +16,16 @@ type: 'blog'
 
 
 
-<p>Writing a report with <a href="https://rmarkdown.rstudio.com/">R Markdown</a> combined with <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> visualisation is a real advantage for reproducible data analysis. Features of both packages are highly flexible and you CAN always get what you want! But if you are just starting out, getting what you want can be tedious. In this post, I share with you some tips found over time.</p>
+<!--Writing a report with [R Markdown](https://rmarkdown.rstudio.com/) combined with [`ggplot2`](https://ggplot2.tidyverse.org/) visualisation is a real advantage for reproducible data analysis. Features of both packages are highly flexible and you CAN always get what you want! But if you are just starting out, getting what you want can be cumbersome In this post, I share with you some tips found over time.-->
 <!--more-->
 <div id="context" class="section level1">
 <h1>Context</h1>
-<p>Écrire un document <a href="https://rmarkdown.rstudio.com/">R Markdown</a> permet d’insérer du code R et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C’est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d’analyse. En tant que personne dont le métier est d’analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.</p>
-<p>Une analyse de données passe inévitablement par l’utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> reste mon préféré (et je sais ne pas être le seul). J’intégre donc fréquemment des graphiques faits avec <code>ggplot2</code> dans mes documents R Markdown.</p>
-<p>Pour obtenir le résultat voulu, il ya tout un tas de configurations possibles, pour les graphiques <code>ggplot2</code>, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j’espère vous seront utiles.</p>
-<p><strong>Pré-requis</strong></p>
+<p>Writing <a href="https://rmarkdown.rstudio.com/">R Markdown</a> document makes possible to insert R code and its results in a report with a choosen output format (HTML, PDF, Word). It is a real asset for analysis reproducibility as well as communication of methods and results. Doing daily data analysis, I usually deliver outputs in report and R Markdown naturally became an essential tool of my workflow.</p>
+<p>Data analysis without data visualisation is like playing darts in the dark, there is a good chance you’ll miss the <del>bullseye</del> point. You’ll find quite a few R packages to build graphics but I have a preference for <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> (I’m not alone!). Therefore, <code>ggplot2</code> graphics are often included in my R Markdown documents.</p>
+<p>Features of both packages are highly flexible and you <strong>CAN</strong> always get what you want ! But if you are just starting out, getting what you want can be cumbersome. In this post, I share with you some tips found over time.</p>
+<p><strong>Requirements</strong></p>
 <ol style="list-style-type: decimal">
-<li>Je pars du principe que vous avez déjà créer un graphique avec <code>ggplot2</code> ou <em>a minima</em> vu des lignes de code utilisant <code>ggplot2</code>. Si ça n’est pas le cas, vous pouvez commencer par consulter <a href="https://ggplot2-book.org/">ce livre</a> disponible gratuitement en ligne. Pour <a href="https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/">ne plus utiliser le jeu de données <code>iris</code></a>, j’utilise une représentation graphique du jeu de données sur <a href="https://github.com/allisonhorst/penguins">les pingouins d’Antarctique</a> mis très récemment en package R par <a href="https://twitter.com/allison_horst?s=20">Allison Horst</a> (allez voir <a href="https://github.com/allisonhorst/stats-illustrations">ses dessins</a> également !). On partira du graphique suivant :</li>
+<li>I assume you have already made a graphic with <code>ggplot2</code> or at least seen some <code>ggplot2</code> code. If not, you can have a look at <a href="https://ggplot2-book.org/">this book</a> freely available online. To <a href="https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/">avoid iris data</a>, I will use a data visualisation of <a href="https://github.com/allisonhorst/penguins">Antartica penguins data</a> recently included in a R package by <a href="https://twitter.com/allison_horst?s=20">Allison Horst</a> (go see her <a href="https://github.com/allisonhorst/stats-illustrations">illustrations</a> too !). I start with this graphic :</li>
 </ol>
 <pre class="r"><code>library(ggplot2)
 p &lt;- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, color = species, fill = species)) +
@@ -37,11 +37,11 @@ p &lt;- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, colo
 p</code></pre>
 <p><img src="/blog/2020-05-21-astuces-ggplot-rmarkdown/2020-05-21-astuces-ggplot-rmarkdown.en_files/figure-html/unnamed-chunk-2-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <ol start="2" style="list-style-type: decimal">
-<li>De même, vous avez déjà créé un document R Markdown (<em>a minima</em> vu comment on fait) et vous savez comment intégrer du code R dans ce document (à l’aide d’un <em>chunk</em>). Dans le cas contraire, commencez <a href="https://bookdown.org/yihui/rmarkdown/">ici</a>.</li>
+<li>Besides, it’s better if you know how to create a R Markdown document and you know how to include R code in it (with a <em>chunk</em>). If not, start <a href="https://bookdown.org/yihui/rmarkdown/">here</a>.</li>
 </ol>
 </div>
-<div id="créer-son-propre-thème-ggplot2" class="section level1">
-<h1>Créer son propre thème <code>ggplot2</code></h1>
+<div id="making-your-own-ggplot2-theme" class="section level1">
+<h1>Making your own <code>ggplot2</code> theme</h1>
 <p>Le thème <code>ggplot2</code> correspond à l’apparence du graphique. Il est possible de changer des éléments un par un via la fonction <a href="https://ggplot2.tidyverse.org/reference/theme.html"><code>theme()</code></a> mais il existe également des thèmes pré-configurés. Par défaut c’est <code>theme_gray()</code> qui est utilisé. Personnellement j’utilise plus souvent <code>theme_bw()</code> (pour black and white).</p>
 <pre class="r"><code>p + labs(title = &quot;Thème par défaut&quot;)
 p + theme_bw() + labs(title = &quot;Avec theme_bw()&quot;)</code></pre>
