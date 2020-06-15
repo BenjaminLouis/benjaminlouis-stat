@@ -1,0 +1,129 @@
+---
+title: "De l'importance du code dans la performance"
+author: "Benjamin Louis"
+date: ''
+slug: fr
+categories:
+  - configuration
+  - astuces
+tags:
+  - R
+  - rmarkdown
+  - ggplot2
+banner: ''
+type: 'blog'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE)
+```
+
+Je ne suis pas un as de la performance. J'ai tendance à me contenter des solutions que je trouve (à mieux dire) car dans mon quotidien ça me prendrait plus de temps d'améliorer mon code. Mais quand il s'agit de déposer un truc en production chez un client, on est bien obligé d'y passer. Voici une de mes expériences sur comment le code d'une même solution menant au même résultat, influence la performance.
+
+
+<!--more-->
+
+# But à partir des points retrouver le triangle de moissonnage
+
+```{r reprex}
+#Données avec les points un peu partout
+dat <- tibble(
+  id = 1:100,
+  distance = 2,
+  direction = runif(100, 0, 360),
+  largeur = 6,
+  x = runif(100, 187100, 187200),
+  y = runif(100, 6786800, 6786900)
+) %>%
+  st_as_sf(coords = c("x", "y"), crs = 2154, remove = FALSE)
+
+# direction est en degré dans le sens horaire par rapport au nord
+# Conversion en angle dans le cercle trigonométrique (sens anti-horaire)
+dat <- dat %>%
+  mutate(trigo_dir = (360 - direction) + 90) %>%
+  mutate(trigo_dir = ifelse(trigo_dir >= 360, trigo_dir - 360, trigo_dir))
+```
+
+# Première solution
+
+```{r}
+fold <- function() {
+  larg <- bind_rows(
+    mutate(dat, geometry = geometry + map2(largeur, trigo_dir,
+                                           ~c((.x/2)*cospi((.y - 90)/180),
+                                              (.x/2)*sinpi((.y - 90)/180)))),
+    mutate(dat, geometry = geometry + map2(largeur, trigo_dir,
+                                           ~c((.x/2)*cospi((.y + 90)/180),
+                                              (.x/2)*sinpi((.y + 90)/180))))
+  ) %>%
+    st_set_crs(2154)
+  # longueur du rectangle = distance parcourue
+  long <- larg  %>%
+    mutate(geometry = geometry + map2(distance, trigo_dir,
+                                      ~c(.x*cospi((.y + 180)/180),
+                                         .x*sinpi((.y + 180)/180)))) %>%
+    st_set_crs(2154)
+  # On joint largeur et longueur
+  rbind(larg, long) %>%
+    group_by(id) %>%
+    summarise(.groups = "drop",
+              geometry = st_union(geometry)) %>%
+    st_convex_hull()
+}
+```
+
+
+Après discussion avec statnmap
+
+```{r}
+fnew <- function() {
+  rbind(
+    dat,
+    mutate(dat, geometry = geometry + map2(distance, trigo_dir,
+                                           ~c(.x*cospi((.y + 180)/180),
+                                              .x*sinpi((.y + 180)/180)))) %>%
+      st_set_crs(2154)
+  ) %>%
+    group_by(id) %>%
+    summarize(largeur = unique(largeur), .groups = "keep") %>%
+    st_cast(to = "LINESTRING") %>%
+    mutate(geometry = st_buffer(geometry, dist = largeur/2, endCapStyle = "FLAT")) %>%
+    ungroup()
+}
+```
+
+Problème : très long (surement le grouping ?)
+
+Nettoyage du code
+
+```{r}
+fnew_better <- function() {
+  rbind(
+    dat,
+    mutate(dat, geometry = geometry + map2(distance, trigo_dir,
+                                           ~c(.x*cospi((.y + 180)/180),
+                                              .x*sinpi((.y + 180)/180)))) %>%
+      st_set_crs(2154)
+  ) %>%
+    group_by(id) %>%
+    summarize(largeur = unique(largeur),
+              geometry = st_cast(st_union(geometry), to = "LINESTRING"),
+              .groups = "drop") %>%
+    mutate(geometry = st_buffer(geometry, dist = largeur/2, endCapStyle = "FLAT"))
+}
+```
+
+
+Microbenchmark
+
+```{r}
+library(microbenchmark)
+microbenchmark(
+  old = fold(),
+  new = fnew()
+)
+```
+
