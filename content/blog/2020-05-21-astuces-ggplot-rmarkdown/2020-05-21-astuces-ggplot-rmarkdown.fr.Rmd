@@ -31,15 +31,15 @@ knitr::opts_chunk$set(
 
 # Le contexte
 
-Écrire un document [R Markdown](https://rmarkdown.rstudio.com/) permet d'insérer du code R et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
+Écrire un document [R Markdown](https://rmarkdown.rstudio.com/) permet d'insérer du code [R](https://www.r-project.org/) et ses résultats directement dans un rapport dont on choisira le format de sortie (HTML, PDF, Word). C'est un atout précieux dans la reproductibilité des analyses et dans la communication de méthodes et résultats d'analyse. En tant que personne dont le métier est d'analyser quotidiennement des données pour des clients et de livrer fréquemment les résultats sous forme de rapport, R Markdown est devenu un outil essentiel de mon quotidien.
 
-Une analyse de données passe inévitablement par l'utilisation de graphique. Il existe tout un panel de packages dans R pour construire des graphiques mais [`ggplot2`](https://ggplot2.tidyverse.org/) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
+Analyser des données sans visualiser les dites données, c'est un peu comme jouer aux fléchettes dans le noir, le risque de rater l'objectif est important. Il existe tout un panel de packages dans R pour construire des graphiques mais [`ggplot2`](https://ggplot2.tidyverse.org/) reste mon préféré (et je sais ne pas être le seul). J'intégre donc fréquemment des graphiques faits avec `ggplot2` dans mes documents R Markdown.
 
 Pour obtenir le résultat voulu, il y a tout un tas de configurations possibles, pour les graphiques `ggplot2`, comme pour les documents R Markdown. Cet article a pour but de vous offrir quelques solutions qui j'espère vous seront utiles.
 
 __Pré-requis__
 
-1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. Pour [ne plus utiliser le jeu de données `iris`](https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/), j'utilise une représentation graphique du jeu de données sur [les pingouins d'Antarctique](https://github.com/allisonhorst/penguins) mis très récemment en package R par [Allison Horst](https://twitter.com/allison_horst?s=20) (allez voir [ses dessins](https://github.com/allisonhorst/stats-illustrations) également !). On partira du graphique suivant :
+1. Je pars du principe que vous avez déjà créer un graphique avec `ggplot2` ou _a minima_ vu des lignes de code utilisant `ggplot2`. Si ça n'est pas le cas, vous pouvez commencer par consulter [ce livre](https://ggplot2-book.org/) disponible gratuitement en ligne. J'utilise une représentation graphique du jeu de données sur [les pingouins de la station Palmer](https://github.com/allisonhorst/penguins) mis très récemment en package R par [Allison Horst](https://twitter.com/allison_horst?s=20) (allez voir [ses dessins](https://github.com/allisonhorst/stats-illustrations) également !). On partira du graphique suivant :
 
 ```{r echo = FALSE, message = FALSE, results = 'hide', cache = TRUE}
 library(tidyverse)
@@ -74,11 +74,11 @@ p <- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, color =
   geom_smooth(method = "lm", formula = "y ~ x", alpha = 0.3) +
   scale_color_viridis_d() +
   scale_fill_viridis_d() +
-  labs(x = "Culmen Length (mm)", y = "Culmen depth (mm)", fill = "Species", color = "Species")
+  labs(x = "Longueur du Culmen (mm)", y = "Profondeur du Culmen (mm)", fill = "Espèces", color = "Espèces")
 p
 ```
 
-2. De même, vous avez déjà créé un document R Markdown (_a minima_ vu comment on fait) et vous savez comment intégrer du code R dans ce document (à l'aide d'un _chunk_). Dans le cas contraire, commencez [ici](https://bookdown.org/yihui/rmarkdown/).
+2. De même, vous avez déjà créé un document R Markdown (_a minima_ vu comment on fait) et vous savez comment intégrer du code R dans ce document (indice : à l'aide d'un _chunk_). Dans le cas contraire, commencez [ici](https://bookdown.org/yihui/rmarkdown/).
 
 # Créer son propre thème `ggplot2`
 
@@ -314,7 +314,7 @@ Avec ces astuces, voilà à quoi peut ressembler le début d'un document RMarkdo
 ---
 title: "Mon super titre"
 author: "Benjamin Louis"
-date: "25/05/2020"
+date: "25/06/2020"
 output: html_document
 ---
 
@@ -344,21 +344,11 @@ theme_set(theme_ben())
 
 À vous désormais de modifier tout ce que vous souhaitez pour créer un thème ggplot2 et mettre vos valeurs préférées d'options de code par défaut. Ces options ne se limitent pas à celles des figures R, n'hésitez pas à consulter [cette page](https://yihui.org/knitr/options/) pour en découvrir d'autres.
 
-J'espère que cette article vous aura aidé à écrire des rapports qui vous plaisent et n'hésitez pas à partager vos astuces en commentaire!
+J'espère que cette article vous aidera à écrire des rapports qui vous plaisent. N'hésitez pas à partager vos astuces en commentaire!
 
 <div class = "smaller">
 
-> #### Disponibilités des données
-> 
-> - **Données disponibles** via licence [CC-0](https://creativecommons.org/share-your-work/public-domain/cc0/) en accord avec [Palmer Station LTER Data Policy](http://pal.lternet.edu/data/policies) et [LTER Data Access Policy for Type I data](https://lternet.edu/data-access-policy/).
-> 
 > #### Références des données
-> 
-> - **Adélie penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic > signatures of foraging among adult male and female Adélie penguins (*Pygoscelis adeliae*) nesting along the Palmer > Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. > https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f.
-> 
-> - **Gentoo penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic > signatures of foraging among adult male and female Gentoo penguin (*Pygoscelis papua*) nesting along the Palmer > Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. > https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689.
-> 
-> - **Chinstrap penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and > isotopic signatures of foraging among adult male and female Chinstrap penguin (*Pygoscelis antarcticus*) nesting along > the Palmer Archipelago near Palmer Station, 2007-2009 ver 6. Environmental Data Initiative. > https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e.
 > 
 > - **Publication originale:** [**Gorman KB, Williams TD, Fraser WR** (2014) Ecological Sexual Dimorphism and > Environmental Variability within a Community of Antarctic Penguins (Genus *Pygoscelis*). PLoS ONE 9(3): e90081. > doi:10.1371/journal.pone.0090081](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081)
 

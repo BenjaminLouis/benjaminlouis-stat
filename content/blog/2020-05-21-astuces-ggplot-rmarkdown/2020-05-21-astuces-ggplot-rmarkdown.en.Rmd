@@ -1,7 +1,7 @@
 ---
 title: "My tips for working with ggplot2 in a RMarkdown document"
 author: "Benjamin Louis"
-date: '2020-05-21'
+date: '2020-06-21'
 slug: en
 categories:
   - configuration
@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 
 # Context
 
-Writing [R Markdown](https://rmarkdown.rstudio.com/) document makes possible to insert R code and its results in a report with a choosen output format (HTML, PDF, Word). It is a real asset for analysis reproducibility as well as communication of methods and results. Doing daily data analysis, I usually deliver outputs in report and R Markdown naturally became an essential tool of my workflow.
+Writing [R Markdown](https://rmarkdown.rstudio.com/) document makes possible to insert [R](https://www.r-project.org/) code and its results in a report with a choosen output format (HTML, PDF, Word). It is a real asset for analysis reproducibility as well as communication of methods and results. Doing daily data analysis, I usually deliver outputs in report and R Markdown naturally became an essential tool of my workflow.
 
 Data analysis without data visualisation is like playing darts in the dark, there is a good chance you'll miss the ~~bullseye~~ point. You'll find quite a few R packages to build graphics but I have a preference for [`ggplot2`](https://ggplot2.tidyverse.org/) (I'm not alone!). Therefore, `ggplot2` graphics are often included in my R Markdown documents.
 
@@ -40,7 +40,7 @@ Features of both packages are highly flexible and you **CAN** always get what yo
 __Requirements__
 
 
-1. I assume you have already made a graphic with `ggplot2` or at least seen some `ggplot2` code. If not, you can have a look at [this book](https://ggplot2-book.org/) freely available online. To [avoid iris data](https://www.garrickadenbuie.com/blog/lets-move-on-from-iris/), I will use a data visualisation of [Antartica penguins data](https://github.com/allisonhorst/penguins) recently included in a R package by [Allison Horst](https://twitter.com/allison_horst?s=20) (go see her [illustrations](https://github.com/allisonhorst/stats-illustrations) too !). I start with this graphic :
+1. I assume you have already made a graphic with `ggplot2` or at least seen some `ggplot2` code. If not, you can have a look at [this book](https://ggplot2-book.org/) freely available online. I will use a data visualisation of [Palmer penguins data](https://github.com/allisonhorst/penguins) recently included in a R package by [Allison Horst](https://twitter.com/allison_horst?s=20) (go see her [illustrations](https://github.com/allisonhorst/stats-illustrations) too !). I start with this graphic :
 
 ```{r echo = FALSE, message = FALSE, results = 'hide', cache = TRUE}
 library(tidyverse)
@@ -79,16 +79,16 @@ p <- ggplot(penguins_raw, aes(x = culmen_length_mm, y = culmen_depth_mm, color =
 p
 ```
 
-2. Besides, it's better if you know how to create a R Markdown document and you know how to include R code in it (with a _chunk_). If not, start [here](https://bookdown.org/yihui/rmarkdown/).
+2. Besides, it's better if you know how to create a R Markdown document and you know how to include R code in it (hint : in a _chunk_!). If not, start [here](https://bookdown.org/yihui/rmarkdown/).
 
 # Making your own `ggplot2` theme
 
-`ggplot2` theme manages how your graphic looks like. All elemements can be changed through the [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function but there also are pre-configured. The default theme used by `ggplot2` is `theme_gray()` but I often switch for `theme_bw()` (for _black and white_).
+`ggplot2` theme manages how your graphic looks like. All elemements can be changed through the [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function but there are also pre-configured one. The default theme used by `ggplot2` is `theme_gray()` but I often switch for `theme_bw()` (for _black and white_).
 
 
 ```{r animation.hook="gifski", interval = 2}
-p + labs(title = "Thème par défaut")
-p + theme_bw() + labs(title = "Avec theme_bw()")
+p + labs(title = "Default theme")
+p + theme_bw() + labs(title = "With theme_bw()")
 ```   
 
 If you always use the same modifications with `theme()` function, I highly suggest that you create your own theme. Here is a customised one :
@@ -97,22 +97,22 @@ If you always use the same modifications with `theme()` function, I highly sugge
 theme_ben <- function(base_size = 14) {
   theme_bw(base_size = base_size) %+replace%
     theme(
-      # L'ensemble de la figure
+      # The whole figure
       plot.title = element_text(size = rel(1), face = "bold", margin = margin(0,0,5,0), hjust = 0),
-      # Zone où se situe le graphique
+      # Graphic area
       panel.grid.minor = element_blank(),
       panel.border = element_blank(),
-      # Les axes
+      # Axis
       axis.title = element_text(size = rel(0.85), face = "bold"),
       axis.text = element_text(size = rel(0.70), face = "bold"),
       axis.line = element_line(color = "black", arrow = arrow(length = unit(0.3, "lines"), type = "closed")),
-      # La légende
+      # Legend
       legend.title = element_text(size = rel(0.85), face = "bold"),
       legend.text = element_text(size = rel(0.70), face = "bold"),
       legend.key = element_rect(fill = "transparent", colour = NA),
       legend.key.size = unit(1.5, "lines"),
       legend.background = element_rect(fill = "transparent", colour = NA),
-      # Les étiquettes dans le cas d'un facetting
+      # Facet strips
       strip.background = element_rect(fill = "#17252D", color = "#17252D"),
       strip.text = element_text(size = rel(0.85), face = "bold", color = "white", margin = margin(5,0,5,0))
     )
@@ -122,25 +122,25 @@ theme_ben <- function(base_size = 14) {
 And the results compared to the default one :
 
 ```{r animation.hook="gifski", interval = 2}
-p + labs(title = "Thème par défaut")
-p + theme_ben() + labs(title = "Avec mon thème personnalisé")
+p + labs(title = "Default theme")
+p + theme_ben() + labs(title = "With the customized one")
 ``` 
 
-Building a customised theme is done by creating a R function where a pre-configured theme is used but some elements are modified with the `theme()` function. The tip is in the use of `%+replace%` in place of the classic `+`. unlike the latter, `%+replace%` doesn't only update elements of a theme but replaces them entirely.
+Building a customised theme is done by creating a R function where a pre-configured theme is used but some elements are modified with the `theme()` function. The tip is in the use of `%+replace%` in place of the classic `+`. Unlike the latter, `%+replace%` doesn't only update elements of a theme but replaces them entirely.
 
-now you just have to let your creativity flows. There are lots of editable elements so the customisation is pretty much limitless. You can find the list of elements in the webpage of the [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function. In the example, the modified elements are for the whole figure (`plot.*` elements), the grapihic area (`pnael.*`), the axis (`axis.*`), the legend (`legend.*`) and the graphics labels (`strip.*`) when [facetting](https://ggplot2-book.org/facet.html) is used.
+Now you just have to let your creativity flows. There are lots of editable elements so the customisation is pretty much limitless. You can find the list of elements in the webpage of the [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html) function. In the example, the modified elements are for the whole figure (`plot.*` elements), the grapihic area (`pnael.*`), the axes (`axis.*`), the legend (`legend.*`) and the graphics labels (`strip.*`) when [facetting](https://ggplot2-book.org/facet.html) is used.
 
-In my opinion, axis and legends are essential elements so my choices go towards highlighted them through their relative size using `rel()` function which return a proportion a the base size (`base_size`) and bolding theme (`face = "bold"`).
+In my opinion, axis and legends are essential elements so my choices go towards highlighted them through their relative size using `rel()`, function which return a proportion the base size (`base_size`), and bolding theme (`face = "bold"`).
 
-Customisation of a `ggplot2` theme can first be hard work but if you are going to often use the same configurations, it's worth it. There are plenty ressources on the web.You can also [contact me](https://benjaminlouis-stat.fr/contact/), I'll be glad to help.
+Customisation of a `ggplot2` theme can first be hard work but if you are going to often use the same configurations, it's worth it. There are plenty ressources on the web. You can also [contact me](https://benjaminlouis-stat.fr/contact/), I'll be glad to help.
 
 You can now insert your theme in a _chunk_ at the beginning of your R Markdown document to use it all along. You can also create a R package with your theme, among others, and load this package.
 
-# Votre graphique `ggplot` dans R Markdown
+# Your `ggplot2` figure in R Markdown
 
-## Options des blocs de code pour les figures
+## Chunk options for figures
 
-Pour intégrer du code R et les résultats de ce code dans un document R Markdown vous utilisez un _chunk_ R avec différentes options :
+Inserting R code and its results in a R Markdown document is possible through utilisation of a _chunk_ which can take several options.
 
 ````markdown
 `r ''````{r option1 = valeur_option1, option2 = valeur_option2}
@@ -148,24 +148,25 @@ Pour intégrer du code R et les résultats de ce code dans un document R Markdow
 `r ''````
 ````
 
-Certaines de ces options sont spécifiques pour les figures générées par R via ce code :
+Some of these options are specifics to figures made with R :
 
-+ Les options relatives à la taille des figures générées par R
++ Options linked to the size of these figures when produced by R
 
-+ Les options relatives à la taille des figures dans le document final
++ Options linked to the size of these figures in the final document
 
 
-## Taille des figures générées par R
+## Size options of figures produced by R
 
-Les options `fig.width` et `fig.height` permettent respectivement de fixer la largeur et la hauteur de la figure générée par R. Par défaut, leur valeur est fixer à 7 (les dimensions sont en pouces). Une alternative que je préfère personnellement est d'utiliser une seule de ces valeurs (`fig.width`) en association avec une autre option `fig.asp` qui fixe le ratio _hauteur/largeur_ de la figure. Il m'est personnellement plus facile de penser directement en terme de ratio que de donner une taille pour la largeur et une pour la hauteur séparément. Par défaut, `fig.asp` est `NULL` mais je le fixe très souvent à $0,8$ car c'est un ratio qui correspond très souvent au résultat que je cherche.
+Options `fig.width` and `fig.height` enable to set width and height of R produced figures. The default value is set to 7 (inches). When I play with these options, I prefer using only one of them (`fig.width`) in association with another one, `fig.asp`, which sets the _height-to-width_ ratio of the figure. It's easier in my mind to play with this ratio than to give a width and a height separatetly. The default value of `fig.asp` is `NULL` but I happen to often set it to $0.8$ because it corresponds to the expected result most of the time.
 
-Les options de taille de la figure générée par R ont des conséquences sur la taille relative des éléments de la figure. Pour une figure `ggplot2`, ces éléments resteront à la taille définie dans le thème utilisée quelque soit la taille globale choisie pour la figure. Une taille importante peut donner un rendu de texte trop petit et vice versa.
+Size options of figures produced by R have consequences on relative sizes of elements in these figures. For a `ggplot2` figure, these elements will remain to the size defined in the used theme, whatever the choosen chunk option values. Therefore a huge size can lead to a very small text and vice versa.
+
 
 <div class = "grid-container">
 <div class = "row">
 <div class = "col-6">
 
-__`fig.width = 3` - éléments du graphique relativement trop grands__
+__`fig.width = 3` - figure elements too big__
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 3}
@@ -180,7 +181,7 @@ p + theme_ben()
 </div>
 <div class = "col-6">
 
-__`fig.width = 10` - éléments du graphique relativement trop petits__
+__`fig.width = 10` - figure elements too small__
 
 
 ````markdown
@@ -197,7 +198,8 @@ p + theme_ben()
 </div>
 </div>
 
-Pour avoir le rendu qui vous plaît, il vous faudra donc combiner entre les tailles choisies dans votre thème et celles utilisées dans les options du code. Pour mon thème, la taille par défaut (`7`) correspond à ce que je veux.
+To find the result you like, you'll need to combine sizes set in your theme and set in the chunk options. With my customised theme, the default size (`7`) looks good to me.
+
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 7}
@@ -210,14 +212,14 @@ p + theme_ben()
 ```
 
 
-Lorsque les textes des axes sont plus longs ou que le graphique est chargé, je peux choisir une taille plus importante (`8` ou `9`) pour que que les éléments du graphique soit relativement plus petit. Notez que pour le texte, une simple modification de la taille de base dans le thème suffit. Vous pouvez alors obtenir des graphiques similaires en modifiant l'un ou l'autre.
+When texts axis are longer or when figures is overloaded, you can choose bigger size (`8` or `9`) to relatively reduce the figure elements. It's worth noting that for the text sizes, you can also modify the base size in your theme to obtain similar figures.
 
 
 <div class = "grid-container">
 <div class = "row">
 <div class = "col-6">
 
-__`fig.width = 9` - `base_size = 14` (défaut)__
+__`fig.width = 9` - `base_size = 14` (default)__
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 9}
@@ -232,7 +234,7 @@ p + theme_ben(base_size = 14)
 </div>
 <div class = "col-6">
 
-__`fig.width = 7` (défaut) - `base_size = 12`__
+__`fig.width = 7` (default) - `base_size = 12`__
 
 
 ````markdown
@@ -249,11 +251,12 @@ p + theme_ben(base_size = 12)
 </div>
 </div>
 
-## Taille de la figure dans le document
+## Size of figures in the final document
 
-Les figures générées par R dans un document RMarkdown sont exportées (en format png par défaut) avant d'être insérées dans le document final. Il est possible de modifier la taille de la figure dans le document final avec les options `out.width` et `out.height`.  
+Figures made with R in a R Markdown document are exported (by default in png format) and then inserted in the final rendered document. Options `out.width` and `out.height` enable to choose the final size of the figure.
 
-Il est rare que j'ai à revoir le ratio entre hauteur et largeur après avoir généré la figure dans R, j'utilise donc quasi-systématiquement uniquement `out.width`. La solution qui me paraît la plus favorable pour définir une valeur est en pourcentage. Ainsi, une valeur de 100% donne :
+I nearly never need to rescale _height-to-width_ ratio after the figures were produced with R and this ratio is kept if you modify only one of both options therefore I only use `out.width`. For me, ercentages seem to be a good way to define the size of output figures. For example with a size set to 100% :
+
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 7, out.width = "100%}
@@ -265,7 +268,7 @@ p + theme_ben()
 p + theme_ben()
 ```
 
-tandis qu'une valeur de 50% donne :
+and a size set to 50% :
 
 ````markdown
 `r ''````{r fig.asp = 0.8, fig.width = 7, out.width = "50%}
@@ -277,23 +280,26 @@ p + theme_ben()
 p + theme_ben()
 ```
 
-Vous voyez que cette fois-ci, la taille relative des éléments est inchangée. Le graphique est le même, il est simplement montré avec une taille plus ou moins grande.
 
-# Éviter de vous répéter
+You can see here that the relative size of elements in the figure are unchanged. The figure is just more or less big. 
 
-Il est toujours frustrant de devoir écrire plusieurs fois la même chose dans une document. Ici, à chaque bloc de code avec une figure `ggplot2`, il faut préciser notre nouveau thème et les valeurs des options du code correspondant à la taille de la figure. Pas de panique, il existe des solutions pour combler votre (ma!) fainéantise.
+# Don't repeat yourself
 
-## Changer le thème `ggplot2` par défaut
+It's quite annoying to write several time the exact same thing. Here, for every chunk with a `ggplot2` figure, you need add a line to specify your newly customised theme and you have to configure options in each chunk. Don't worry, solutions to deal with your (my!) lazyness exist.
 
-Vous pouvez changer le thème par défaut pour `ggplot2` avec la fonction `theme_set()`. Il suffit pour cela de mettre après création de votre thème (ou chargement du package le contenant) la commande :
+
+## Changing default `ggplot2` theme
+
+You can change the default `ggplot2` theme with the `theme_set()` function. You just have to write this line after creating your own theme (or loading the package with the theme you want) :
+:
 
 ```{r eval = FALSE}
-theme_set(theme_ben()) # remplacer theme_ben() par le nom du thème voulu
+theme_set(theme_ben()) # change theme_ben() with the wanted theme
 ```
 
-## Changer les valeurs par défaut des options des blocs de code
+##  Changing default values of chunk options
 
-Vous pouvez changer les valeurs par défaut des options des blocs de code en mettant celui-ci en début de document :
+You can also change default values of chunk options by writing this at the beginning of your R Markdown document :
 
 ````markdown
 `r ''````{r setup, include=FALSE}
@@ -304,24 +310,25 @@ knitr::opts_chunk$set(
 )
 `r ''````
 ````
-Ces valeurs seront appliquées à tous les blocs de code sauf spécification contraire ponctuelle. Vous pouvez alors mettre les options que vous utilisez souvent et éviter d'avoir à les recopier à chaque fois.
 
-## À quoi peut ressembler le début de votre document R Markdown
+These values will be applied for all chunks unless you specify other value in a chunk locally. You can set values often used (which differ from the default one) and avoid repeating them for each chunk.
 
-Avec ces astuces, voilà à quoi peut ressembler le début d'un document RMarkdown dont la sortie sera sous format HTML :
+## What can be the beginning of your R Markdown document
+
+With all these tips, here I show an example of the beginning of a R Markdown document (HTML output format) with customised theme and chunk options :
 
 
 ````markdown
 ---
-title: "Mon super titre"
+title: "My awesome title"
 author: "Benjamin Louis"
-date: "25/05/2020"
+date: "25/06/2020"
 output: html_document
 ---
 
 
 `r ''````{r setup, include=FALSE}
-# Option de chunk
+# Chunk options
 knitr::opts_chunk$set(
  fig.width = 6,
  fig.asp = 0.8,
@@ -330,37 +337,27 @@ knitr::opts_chunk$set(
 `r ''````
 
 `r ''````{r theme_ggplot2, echo = FALSE}
-# Création du thème ggplot2
+# Creating a ggplot2 theme
 library(ggplot)
 theme_ben <- function(base_size = 14) {
   theme_bw(base_size = base_size) %+replace%
     theme(
-      # Les options du thème
+      # changed theme options
     )
 }
-# Changement du thème par défaut
+# Changing the default theme
 theme_set(theme_ben())
 `r ''````
 ````
 
-À vous désormais de modifier tout ce que vous souhaitez pour créer un thème ggplot2 et mettre vos valeurs préférées d'options de code par défaut. Ces options ne se limitent pas à celles des figures R, n'hésitez pas à consulter [cette page](https://yihui.org/knitr/options/) pour en découvrir d'autres.
+From now on, you can modify what you need to create your `ggplot2` theme et give chunk options you like better. Of course, these options are not limited to figures produced by R, you can look at [this webpage](https://yihui.org/knitr/options/) to discover others.
 
-J'espère que cette article vous aura aidé à écrire des rapports qui vous plaisent et n'hésitez pas à partager vos astuces en commentaire!
+I hope this post will help you write report you like and feel free to share your tips in the comments section !
 
 <div class = "smaller">
 
-> #### Disponibilités des données
-> 
-> - **Données disponibles** via licence [CC-0](https://creativecommons.org/share-your-work/public-domain/cc0/) en accord avec [Palmer Station LTER Data Policy](http://pal.lternet.edu/data/policies) et [LTER Data Access Policy for Type I data](https://lternet.edu/data-access-policy/).
-> 
-> #### Références des données
-> 
-> - **Adélie penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic > signatures of foraging among adult male and female Adélie penguins (*Pygoscelis adeliae*) nesting along the Palmer > Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. > https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f.
-> 
-> - **Gentoo penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic > signatures of foraging among adult male and female Gentoo penguin (*Pygoscelis papua*) nesting along the Palmer > Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative. > https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689.
-> 
-> - **Chinstrap penguins**: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and > isotopic signatures of foraging among adult male and female Chinstrap penguin (*Pygoscelis antarcticus*) nesting along > the Palmer Archipelago near Palmer Station, 2007-2009 ver 6. Environmental Data Initiative. > https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e.
-> 
-> - **Publication originale:** [**Gorman KB, Williams TD, Fraser WR** (2014) Ecological Sexual Dimorphism and > Environmental Variability within a Community of Antarctic Penguins (Genus *Pygoscelis*). PLoS ONE 9(3): e90081. > doi:10.1371/journal.pone.0090081](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081)
+#### Data citations
+
+> **Palmer penguins data where originally published in** : [**Gorman KB, Williams TD, Fraser WR** (2014) Ecological Sexual Dimorphism and > Environmental Variability within a Community of Antarctic Penguins (Genus *Pygoscelis*). PLoS ONE 9(3): e90081. > doi:10.1371/journal.pone.0090081](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081)
 
 </div>
