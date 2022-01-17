@@ -112,7 +112,8 @@ paginate = 10
     # - you're done. Happy mailing!
     #
     # Enable the contact form by entering your Formspree.io email
-    email = "contact@benjaminlouis-stat.fr"
+    # Change the 17/01/2022 to a new endpoint (asked by formspree to security reason)
+    email = "f/mlezgnrz"
 
     #about_us = ""
     copyright = "&copy; 2018 - 2019, Benjamin Louis - <a href = \"ml/index.html\"> Mentions légales </a> "
